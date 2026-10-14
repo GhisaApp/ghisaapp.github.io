@@ -122,6 +122,16 @@
         .opt-chip { transition: all 0.2s ease; }
         .history-tab { transition: all 0.2s ease; }
         .history-tab.active { background-color: #111827; color: white; }
+        .share-style { transition: all 0.2s ease; }
+        .share-style.active { background-color: #111827; color: white; }
+        .share-preview { background: #131315; }
+        .share-preview.checker {
+            background-color: #e5e7eb;
+            background-image: linear-gradient(45deg, #cbd5e1 25%, transparent 25%), linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #cbd5e1 75%), linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+        }
         .opt-chip.active { background-color: #111827; color: white; border-color: #ff5722; }
 
         /* Extra workout colors */
@@ -172,7 +182,7 @@
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-[10px] opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.3</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.4</span>
             </div>
         </section>
 
@@ -203,6 +213,9 @@
                         <input type="date" id="history-date-picker" onchange="loadHistoryDate()" class="flex-grow min-w-0 bg-gray-50 border-2 border-gray-200 rounded-xl px-3 py-3 text-gray-900 font-bold focus:outline-none focus:border-ghisa-neonBlue transition-all">
                         <button onclick="exportDayExcel()" title="Esporta il giorno in Excel" class="shrink-0 bg-gray-900 text-white px-4 rounded-xl font-black uppercase text-xs flex items-center gap-2 active:scale-95 transition-all">
                             <i class="fa-solid fa-file-excel text-ghisa-neonGreen text-base"></i> Excel
+                        </button>
+                        <button onclick="shareHistoryDate()" title="Condividi sui social" class="shrink-0 w-12 bg-ghisa-accent text-white rounded-xl flex items-center justify-center active:scale-95 transition-all shadow-neon-orange">
+                            <i class="fa-solid fa-share-nodes text-base"></i>
                         </button>
                     </div>
                     <div id="history-results" class="flex-grow overflow-y-auto overscroll-contain space-y-3 pr-1"></div>
@@ -253,9 +266,14 @@
                 </button>
                 <div id="day-header" class="flex-grow min-w-0 rounded-2xl py-3 px-6 shadow-sport flex justify-between items-center gap-2 border-2 border-white">
                     <h2 id="day-title" class="text-3xl font-black italic text-white uppercase tracking-tighter truncate">Allenamento</h2>
-                    <button onclick="openWorkoutSettings()" title="Imposta allenamento" class="shrink-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center active:scale-95 transition-all">
-                        <i class="fa-solid fa-gear"></i>
-                    </button>
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="shareWorkoutToday()" title="Condividi sui social" class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center active:scale-95 transition-all">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </button>
+                        <button onclick="openWorkoutSettings()" title="Imposta allenamento" class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center active:scale-95 transition-all">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -478,7 +496,42 @@
         </div>
     </div>
 
-    <div id="modal-workout" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
+    <!-- SHARE: Strava-style story image of a session -->
+    <div id="modal-share" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[110] hidden flex-col items-center justify-center p-3 transition-opacity">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-4 shadow-sport flex flex-col max-h-[94vh]">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-xl font-black italic uppercase text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes text-ghisa-accent"></i> Condividi
+                </h3>
+                <button onclick="closeShareModal()" class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="share-preview-box" class="share-preview mx-auto rounded-2xl overflow-hidden shadow-sport mb-3 flex-shrink min-h-0" style="aspect-ratio: 9 / 16; height: min(52vh, 460px);">
+                <img id="share-preview" alt="Anteprima dell'immagine da condividere" class="w-full h-full object-contain">
+            </div>
+
+            <div class="grid grid-cols-4 gap-1 mb-3 bg-gray-100 p-1 rounded-xl">
+                <button type="button" onclick="setShareStyle('dark')" data-style="dark" class="share-style py-2 rounded-lg text-[10px] font-black uppercase text-gray-500"><i class="fa-solid fa-moon block text-base mb-0.5"></i>Scuro</button>
+                <button type="button" onclick="setShareStyle('color')" data-style="color" class="share-style py-2 rounded-lg text-[10px] font-black uppercase text-gray-500"><i class="fa-solid fa-palette block text-base mb-0.5"></i>Colore</button>
+                <button type="button" onclick="pickSharePhoto()" data-style="photo" class="share-style py-2 rounded-lg text-[10px] font-black uppercase text-gray-500"><i class="fa-solid fa-image block text-base mb-0.5"></i>Foto</button>
+                <button type="button" onclick="setShareStyle('clear')" data-style="clear" class="share-style py-2 rounded-lg text-[10px] font-black uppercase text-gray-500"><i class="fa-solid fa-chess-board block text-base mb-0.5"></i>Trasp.</button>
+            </div>
+            <input type="file" id="share-photo-input" accept="image/*" class="hidden" onchange="handleSharePhoto(event)">
+
+            <div class="flex gap-2">
+                <button onclick="saveShareImage()" class="flex-1 bg-gray-100 text-gray-700 border-2 border-gray-200 py-3 rounded-xl font-black uppercase text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                    <i class="fa-solid fa-download"></i> Salva
+                </button>
+                <button onclick="sendShareImage()" class="flex-[2] bg-ghisa-accent hover:bg-ghisa-accentHover text-white py-3 rounded-xl font-black uppercase text-sm flex items-center justify-center gap-2 shadow-neon-orange active:scale-95 transition-all">
+                    <i class="fa-solid fa-share-nodes"></i> Condividi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-workout"class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-sport flex flex-col max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
                 <h3 id="workout-modal-title" class="text-2xl font-black italic uppercase text-gray-900 flex items-center gap-2">
@@ -725,12 +778,12 @@
             return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
         }
 
-        // Most recent session before today for an exercise with this name (by name, so it
-        // also works after a swap). Returns { date, sets, notes, mode, perSide } or null.
-        function getLastSession(name, type) {
-            const today = getTodayString();
+        // Most recent session before a date (default today) for an exercise with this name (by name,
+        // so it also works after a swap). Returns { date, sets, notes, mode, perSide } or null.
+        function getLastSession(name, type, beforeDate) {
+            const limit = beforeDate || getTodayString();
             const historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
-            const dates = Object.keys(historyData).filter(d => d < today).sort().reverse();
+            const dates = Object.keys(historyData).filter(d => d < limit).sort().reverse();
             for (const date of dates) {
                 const entry = (historyData[date] || []).find(ex => sameName(ex.name, name) && (ex.type || 'gym') === type);
                 if (entry && (entry.sets || []).length > 0) {
@@ -1452,7 +1505,7 @@
         }
 
         // On phones: the share sheet (WhatsApp, ChatGPT, Claude...); elsewhere: a download
-        async function shareOrDownload(blob, filename, title) {
+        async function shareOrDownload(blob, filename, title, savedMessage = 'File scaricato!') {
             const file = new File([blob], filename, { type: blob.type });
             const isPhone = window.matchMedia('(pointer: coarse)').matches;
             if (isPhone && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1463,6 +1516,11 @@
                     if (err.name === 'AbortError') return;
                 }
             }
+            downloadBlob(blob, filename);
+            showToast(savedMessage, false);
+        }
+
+        function downloadBlob(blob, filename) {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -1471,7 +1529,6 @@
             a.click();
             a.remove();
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            showToast('Excel scaricato!', false);
         }
 
         window.exportDayExcel = () => {
@@ -1482,7 +1539,476 @@
                 return;
             }
             const blob = buildXlsx(`Allenamento ${date}`, dayRows(date, entries), [11, 16, 22, 16, 6, 7, 12, 9, 9, 6, 8, 11, 12, 16, 24, 30]);
-            shareOrDownload(blob, `ghisa-${date}.xlsx`, `Allenamento del ${formatShortDate(date)}`);
+            shareOrDownload(blob, `ghisa-${date}.xlsx`, `Allenamento del ${formatShortDate(date)}`, 'Excel scaricato!');
+        };
+
+        // --- SHARE ON SOCIAL: a 1080×1920 story image, drawn on a canvas --- //
+        // Same gradients as the workout cards
+        const COLOR_HEX = {
+            'bg-lun': ['#2979ff', '#004ba0'], 'bg-mar': ['#ff1744', '#b70000'], 'bg-mer': ['#ff9100', '#c56000'],
+            'bg-gio': ['#00e676', '#00b248'], 'bg-ven': ['#d500f9', '#9c00c4'], 'bg-sab': ['#00e5ff', '#00a5b8'],
+            'bg-dom': ['#37474f', '#102027'], 'bg-c8': ['#ff5722', '#c41c00'], 'bg-c9': ['#00bfa5', '#00796b'],
+            'bg-c10': ['#f50057', '#a00037'], 'bg-c11': ['#651fff', '#3d00b3'], 'bg-c12': ['#8d6e63', '#4e342e']
+        };
+        const SHARE_W = 1080, SHARE_H = 1920, SHARE_PAD = 90;
+        let shareState = null; // { date, title, color, entries, style, photo, blob, url }
+
+        // Best set of an exercise in words: "85 kg × 8", "20 kg · 45s", "6 × 400 m"
+        function bestSetText(ex) {
+            const type = ex.type || 'gym';
+            const sets = ex.sets || [];
+            if (type !== 'gym') {
+                const s = sets.find(x => Number(x.distance) > 0) || sets[0] || {};
+                const parts = [];
+                if (Number(s.distance) > 0) parts.push(`${Number(s.count) > 1 ? s.count + ' × ' : ''}${s.distance} m`);
+                if (s.time) parts.push(s.time);
+                return parts.join(' · ');
+            }
+            const timed = ex.mode === 'time';
+            const top = getTopSet(sets, timed);
+            if (!top) return '';
+            const kg = top.weight > 0 ? `${formatWeight(top.weight)} ${ex.perSide ? 'kg/lato' : 'kg'}` : '';
+            if (timed) return [kg, formatDuration(top.amount)].filter(Boolean).join(' · ');
+            return kg ? `${kg} × ${top.amount}` : `× ${top.amount}`;
+        }
+
+        // Did this exercise beat its previous session?
+        function isProgress(ex, date) {
+            if ((ex.type || 'gym') !== 'gym') return false;
+            const timed = ex.mode === 'time';
+            const last = getLastSession(ex.name, 'gym', date);
+            if (!last || (last.mode === 'time') !== timed) return false;
+            const top = getTopSet(last.sets, timed);
+            return !!top && (ex.sets || []).some(s => beatsTopSet(s, top, timed));
+        }
+
+        function shareStats(entries) {
+            let sets = 0, volume = 0, seconds = 0, meters = 0;
+            entries.forEach(ex => {
+                const type = ex.type || 'gym';
+                (ex.sets || []).forEach(s => {
+                    sets++;
+                    if (type !== 'gym') meters += (Number(s.distance) || 0) * (Number(s.count) || 1);
+                    else if (ex.mode === 'time') seconds += Number(s.duration) || 0;
+                    else volume += (Number(s.weight) || 0) * (Number(s.reps) || 0) * (ex.perSide ? 2 : 1);
+                });
+            });
+            const stats = [
+                { label: entries.length === 1 ? 'Esercizio' : 'Esercizi', value: String(entries.length) },
+                { label: 'Serie', value: String(sets) }
+            ];
+            if (volume > 0) stats.push({ label: 'Volume', value: `${Math.round(volume).toLocaleString('it-IT')} kg` });
+            else if (seconds > 0) stats.push({ label: 'Tempo', value: formatDuration(seconds) });
+            else if (meters > 0) stats.push({ label: 'Distanza', value: meters >= 1000 ? `${formatWeight(Math.round(meters / 100) / 10)} km` : `${meters} m` });
+            return stats;
+        }
+
+        // --- canvas helpers ---
+        function setSpacing(ctx, px) {
+            if ('letterSpacing' in ctx) ctx.letterSpacing = `${px}px`;
+        }
+
+        function roundRectPath(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        function ellipsize(ctx, text, maxW) {
+            if (ctx.measureText(text).width <= maxW) return text;
+            let t = text;
+            while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+            return t.trimEnd() + '…';
+        }
+
+        // Font size (down from max) at which the text fits the width
+        function fitSize(ctx, text, maxW, max, min, font) {
+            let size = max;
+            ctx.font = font(size);
+            while (size > min && ctx.measureText(text).width > maxW) {
+                size -= 4;
+                ctx.font = font(size);
+            }
+            return size;
+        }
+
+        // The app icon (same geometry as icon.svg), drawn with paths so the canvas stays exportable
+        function drawLogo(ctx, x, y, size) {
+            const rect = (rx, ry, w, h, r, fill, angle, cx, cy) => {
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(angle * Math.PI / 180);
+                ctx.translate(-cx, -cy);
+                roundRectPath(ctx, rx, ry, w, h, r);
+                ctx.fillStyle = fill;
+                ctx.fill();
+                ctx.restore();
+            };
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(size / 1092, size / 1092);
+            ctx.shadowColor = 'transparent';
+            roundRectPath(ctx, 0, 0, 1092, 1092, 240);
+            ctx.fillStyle = '#131315';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(142, 590);
+            ctx.quadraticCurveTo(546, 394, 950, 590);
+            ctx.strokeStyle = '#c8ccd1';
+            ctx.lineWidth = 31;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            rect(204, 413, 46, 300, 9, '#8b9097', -21, 227, 563);
+            rect(842, 413, 46, 300, 9, '#8b9097', 21, 865, 563);
+            rect(262, 311, 56, 425, 11, '#ff5212', -14, 290, 523);
+            rect(774, 311, 56, 425, 11, '#ff5212', 14, 802, 523);
+            ctx.restore();
+        }
+
+        function drawDots(ctx, alpha) {
+            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+            for (let y = 18; y < SHARE_H; y += 40) {
+                for (let x = 18; x < SHARE_W; x += 40) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        function drawShareBackground(ctx, style, colorClass, photo) {
+            const [c1, c2] = COLOR_HEX[colorClass] || COLOR_HEX['bg-c8'];
+            if (style === 'clear') return;
+
+            if (style === 'photo' && photo) {
+                // Cover: fill the whole frame, crop the excess
+                const scale = Math.max(SHARE_W / photo.width, SHARE_H / photo.height);
+                const w = photo.width * scale, h = photo.height * scale;
+                ctx.drawImage(photo, (SHARE_W - w) / 2, (SHARE_H - h) / 2, w, h);
+                const top = ctx.createLinearGradient(0, 0, 0, SHARE_H * 0.3);
+                top.addColorStop(0, 'rgba(0,0,0,0.6)');
+                top.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = top;
+                ctx.fillRect(0, 0, SHARE_W, SHARE_H * 0.3);
+                const bottom = ctx.createLinearGradient(0, SHARE_H * 0.2, 0, SHARE_H);
+                bottom.addColorStop(0, 'rgba(0,0,0,0)');
+                bottom.addColorStop(0.45, 'rgba(0,0,0,0.55)');
+                bottom.addColorStop(1, 'rgba(0,0,0,0.88)');
+                ctx.fillStyle = bottom;
+                ctx.fillRect(0, SHARE_H * 0.2, SHARE_W, SHARE_H * 0.8);
+                return;
+            }
+
+            if (style === 'color') {
+                const g = ctx.createLinearGradient(0, 0, SHARE_W, SHARE_H);
+                g.addColorStop(0, c1);
+                g.addColorStop(1, c2);
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+                const shade = ctx.createLinearGradient(0, SHARE_H * 0.35, 0, SHARE_H);
+                shade.addColorStop(0, 'rgba(0,0,0,0)');
+                shade.addColorStop(1, 'rgba(0,0,0,0.45)');
+                ctx.fillStyle = shade;
+                ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+                drawDots(ctx, 0.08);
+                return;
+            }
+
+            // Dark: the app's black with an orange glow and a hint of the workout color
+            ctx.fillStyle = '#0e0e10';
+            ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+            const glow = ctx.createRadialGradient(SHARE_W * 0.9, SHARE_H * 0.08, 0, SHARE_W * 0.9, SHARE_H * 0.08, 1000);
+            glow.addColorStop(0, 'rgba(255,82,18,0.42)');
+            glow.addColorStop(1, 'rgba(255,82,18,0)');
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+            const glow2 = ctx.createRadialGradient(0, SHARE_H, 0, 0, SHARE_H, 1100);
+            glow2.addColorStop(0, c1 + '55');
+            glow2.addColorStop(1, c1 + '00');
+            ctx.fillStyle = glow2;
+            ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+            drawDots(ctx, 0.05);
+        }
+
+        function drawShareImage(canvas, state) {
+            const ctx = canvas.getContext('2d');
+            const { style, entries, date } = state;
+            const P = SHARE_PAD, innerW = SHARE_W - P * 2;
+            const INK = '#ffffff', MUTED = style === 'clear' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.68)';
+            const ACCENT = style === 'color' ? '#ffffff' : '#ff5722';
+            const F = (weight, size, italic) => `${italic ? 'italic ' : ''}${weight} ${size}px Montserrat, "Arial Black", sans-serif`;
+
+            ctx.clearRect(0, 0, SHARE_W, SHARE_H);
+            drawShareBackground(ctx, style, state.color, state.photo);
+            ctx.textBaseline = 'alphabetic';
+            // On a transparent sticker the text needs its own shadow to read on any photo
+            const textShadow = () => {
+                ctx.shadowColor = style === 'clear' || style === 'photo' ? 'rgba(0,0,0,0.45)' : 'transparent';
+                ctx.shadowBlur = style === 'clear' ? 18 : 10;
+                ctx.shadowOffsetY = 2;
+            };
+            textShadow();
+
+            // Header: logo + wordmark, date on the right
+            drawLogo(ctx, P, 92, 96);
+            textShadow();
+            ctx.fillStyle = INK;
+            ctx.font = F(800, 64, true);
+            setSpacing(ctx, -2);
+            ctx.textAlign = 'left';
+            ctx.fillText('GHISA', P + 120, 166);
+            setSpacing(ctx, 3);
+            ctx.font = F(800, 30);
+            ctx.fillStyle = MUTED;
+            ctx.textAlign = 'right';
+            const dateText = new Date(date + 'T00:00:00').toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
+            ctx.fillText(dateText, SHARE_W - P, 158);
+
+            // Kicker + workout name (up to 2 lines, shrinks to fit)
+            let y = 400;
+            ctx.textAlign = 'left';
+            ctx.fillStyle = ACCENT;
+            ctx.font = F(800, 34);
+            setSpacing(ctx, 8);
+            ctx.fillText('ALLENAMENTO', P, y);
+
+            setSpacing(ctx, -3);
+            const title = state.title.toUpperCase();
+            let size = 170, lines;
+            for (; size >= 80; size -= 6) {
+                ctx.font = F(800, size, true);
+                const words = title.split(/\s+/);
+                lines = [];
+                let line = '';
+                words.forEach(w => {
+                    const test = line ? `${line} ${w}` : w;
+                    if (ctx.measureText(test).width <= innerW || !line) line = test;
+                    else { lines.push(line); line = w; }
+                });
+                if (line) lines.push(line);
+                if (lines.length <= 2 && lines.every(l => ctx.measureText(l).width <= innerW)) break;
+            }
+            ctx.fillStyle = INK;
+            lines.slice(0, 2).forEach(l => {
+                y += size * 0.98;
+                ctx.fillText(l, P - 6, y);
+            });
+
+            // Accent bar + progress pill
+            y += 44;
+            ctx.shadowColor = 'transparent';
+            roundRectPath(ctx, P, y, 150, 14, 7);
+            ctx.fillStyle = ACCENT;
+            ctx.fill();
+            const progressCount = entries.filter(ex => isProgress(ex, date)).length;
+            if (progressCount > 0) {
+                const label = `▲ ${progressCount} ${progressCount === 1 ? 'PROGRESSO' : 'PROGRESSI'}`;
+                ctx.font = F(800, 30);
+                setSpacing(ctx, 3);
+                const pw = ctx.measureText(label).width + 56;
+                roundRectPath(ctx, P + 180, y - 26, pw, 66, 33);
+                ctx.fillStyle = style === 'color' ? '#ffffff' : '#ff5722';
+                ctx.fill();
+                ctx.fillStyle = style === 'color' ? '#111827' : '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, P + 180 + pw / 2, y + 18);
+                ctx.textAlign = 'left';
+            }
+            textShadow();
+
+            // Stats row
+            y += 150;
+            const stats = shareStats(entries);
+            const colW = innerW / stats.length;
+            stats.forEach((st, i) => {
+                const x = P + i * colW;
+                setSpacing(ctx, -2);
+                const vs = fitSize(ctx, st.value, colW - 24, 92, 44, s => F(800, s, true));
+                ctx.font = F(800, vs, true);
+                ctx.fillStyle = INK;
+                ctx.fillText(st.value, x, y);
+                setSpacing(ctx, 5);
+                ctx.font = F(800, 26);
+                ctx.fillStyle = MUTED;
+                ctx.fillText(st.label.toUpperCase(), x, y + 52);
+            });
+
+            // Divider
+            y += 110;
+            ctx.shadowColor = 'transparent';
+            ctx.fillStyle = 'rgba(255,255,255,0.22)';
+            ctx.fillRect(P, y, innerW, 2);
+            textShadow();
+
+            // Exercises: name + best set, then the sets in small
+            y += 40;
+            const rowH = 128;
+            const footerTop = SHARE_H - 170;
+            let maxRows = Math.floor((footerTop - y) / rowH);
+            if (entries.length > maxRows) maxRows -= 1; // room for "+N altri"
+            entries.slice(0, Math.max(1, maxRows)).forEach(ex => {
+                const best = bestSetText(ex);
+                const progress = isProgress(ex, date);
+                y += 56;
+                setSpacing(ctx, 0);
+                ctx.font = F(800, 44);
+                const bestW = best ? ctx.measureText(best).width : 0;
+                const arrowW = progress ? 44 : 0;
+                ctx.fillStyle = INK;
+                ctx.textAlign = 'left';
+                ctx.fillText(ellipsize(ctx, ex.name.toUpperCase(), innerW - bestW - arrowW - 40), P, y);
+                if (best) {
+                    ctx.textAlign = 'right';
+                    ctx.fillText(best, SHARE_W - P, y);
+                    if (progress) {
+                        ctx.fillStyle = ACCENT;
+                        ctx.fillText('▲', SHARE_W - P - bestW - 14, y);
+                    }
+                }
+                const detail = setsSummaryText({ type: ex.type || 'gym', mode: ex.mode || 'reps', sets: ex.sets || [] });
+                ctx.textAlign = 'left';
+                ctx.font = F(600, 30);
+                ctx.fillStyle = MUTED;
+                const n = (ex.sets || []).length;
+                ctx.fillText(ellipsize(ctx, `${n} ${n === 1 ? 'serie' : 'serie'}${detail ? ' · ' + detail : ''}`, innerW), P, y + 46);
+                y += rowH - 56;
+            });
+            const hidden = entries.length - Math.max(1, maxRows);
+            if (hidden > 0) {
+                ctx.font = F(800, 32);
+                ctx.fillStyle = MUTED;
+                setSpacing(ctx, 3);
+                ctx.fillText(`+ ${hidden} ${hidden === 1 ? 'ALTRO ESERCIZIO' : 'ALTRI ESERCIZI'}`, P, y + 50);
+            }
+
+            // Footer
+            ctx.textAlign = 'center';
+            ctx.font = F(800, 26);
+            setSpacing(ctx, 8);
+            ctx.fillStyle = MUTED;
+            ctx.fillText('TRACCIATO CON GHISA', SHARE_W / 2, SHARE_H - 90);
+            setSpacing(ctx, 0);
+        }
+
+        async function ensureShareFonts() {
+            if (!document.fonts) return;
+            const fonts = ['italic 800 100px Montserrat', '800 40px Montserrat', '600 30px Montserrat'];
+            try {
+                await Promise.race([Promise.all(fonts.map(f => document.fonts.load(f))), new Promise(r => setTimeout(r, 1500))]);
+            } catch (err) {}
+        }
+
+        async function renderShare() {
+            if (!shareState) return;
+            await ensureShareFonts();
+            const canvas = document.createElement('canvas');
+            canvas.width = SHARE_W;
+            canvas.height = SHARE_H;
+            drawShareImage(canvas, shareState);
+
+            document.querySelectorAll('.share-style').forEach(b => b.classList.toggle('active', b.dataset.style === shareState.style));
+            document.getElementById('share-preview-box').classList.toggle('checker', shareState.style === 'clear');
+
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            if (!blob) return;
+            shareState.blob = blob;
+            if (shareState.url) URL.revokeObjectURL(shareState.url);
+            shareState.url = URL.createObjectURL(blob);
+            document.getElementById('share-preview').src = shareState.url;
+        }
+
+        function openShare(date, title, color, entries) {
+            const style = shareState && shareState.style !== 'photo' ? shareState.style : 'dark';
+            shareState = { date, title, color, entries, style, photo: null, blob: null, url: shareState ? shareState.url : null };
+            document.getElementById('share-preview').removeAttribute('src');
+            const modal = document.getElementById('modal-share');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            renderShare();
+        }
+
+        window.closeShareModal = () => {
+            const modal = document.getElementById('modal-share');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        function sharedEntries(date, filter) {
+            return (getHistoryData()[date] || []).filter(ex => (ex.completed || (ex.sets || []).length > 0) && (!filter || filter(ex)));
+        }
+
+        // From a workout: today's session of that workout
+        window.shareWorkoutToday = () => {
+            const day = getDay(currentDay);
+            if (!day) return;
+            const today = getTodayString();
+            const entries = sharedEntries(today, ex => ex.dayId === day.id);
+            if (entries.length === 0) {
+                showToast('Spunta almeno una serie oggi per condividere l\'allenamento.');
+                return;
+            }
+            openShare(today, day.name, day.color, entries);
+        };
+
+        // From the history: everything done on the chosen date
+        window.shareHistoryDate = () => {
+            const date = document.getElementById('history-date-picker').value || getTodayString();
+            const entries = sharedEntries(date);
+            if (entries.length === 0) {
+                showToast('Nessun allenamento registrato in questa data.');
+                return;
+            }
+            const names = [...new Set(entries.map(ex => ex.dayName || ex.dayOfWeek).filter(Boolean))];
+            const day = getDay(entries[0].dayId);
+            openShare(date, names.length > 0 ? names.join(' + ') : 'Allenamento', day ? day.color : 'bg-c8', entries);
+        };
+
+        window.setShareStyle = (style) => {
+            if (!shareState) return;
+            shareState.style = style;
+            renderShare();
+        };
+
+        // First tap on "Foto": pick a picture; tap again while on it: change picture
+        window.pickSharePhoto = () => {
+            if (!shareState) return;
+            if (shareState.photo && shareState.style !== 'photo') {
+                setShareStyle('photo');
+                return;
+            }
+            document.getElementById('share-photo-input').click();
+        };
+
+        window.handleSharePhoto = (event) => {
+            const file = event.target.files[0];
+            event.target.value = '';
+            if (!file || !shareState) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    shareState.photo = img;
+                    shareState.style = 'photo';
+                    renderShare();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.sendShareImage = () => {
+            if (!shareState || !shareState.blob) return;
+            shareOrDownload(shareState.blob, `ghisa-${shareState.date}.png`, `Allenamento ${shareState.title}`, 'Immagine salvata!');
+        };
+
+        window.saveShareImage = () => {
+            if (!shareState || !shareState.blob) return;
+            downloadBlob(shareState.blob, `ghisa-${shareState.date}.png`);
+            showToast('Immagine salvata!', false);
         };
 
         // --- WORKOUTS (home) --- //
