@@ -1,7 +1,7 @@
 // Service worker: makes Ghisa installable and usable offline.
 // Bump CACHE_VERSION on every release: the changed sw.js is what tells
 // installed apps that a new version is out.
-const CACHE_VERSION = 'ghisa-v1.7';
+const CACHE_VERSION = 'ghisa-v1.8';
 
 const APP_FILES = [
     './',
