@@ -44,6 +44,9 @@
         }
     </script>
     <style>
+        /* No rubber-band bounce: the page stays put when you swipe past the edges */
+        html, body { overscroll-behavior: none; }
+
         body {
             background-color: #f4f5f7;
             color: #111827;
@@ -117,6 +120,8 @@
         .type-btn.active[data-type="run"] { background-color: #111827; color: white; border-color: #ff5722; }
         .type-btn.active[data-type="swim"] { background-color: #111827; color: white; border-color: #00bcd4; }
         .opt-chip { transition: all 0.2s ease; }
+        .history-tab { transition: all 0.2s ease; }
+        .history-tab.active { background-color: #111827; color: white; }
         .opt-chip.active { background-color: #111827; color: white; border-color: #ff5722; }
 
         /* Extra workout colors */
@@ -127,12 +132,12 @@
         .bg-c12 { background: linear-gradient(135deg, #8d6e63, #4e342e); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased pb-40" id="app-body">
+<body class="min-h-screen flex flex-col antialiased pb-24 sm:pb-28" id="app-body">
 
     <header class="glass-header shadow-sm py-4 px-4 sticky top-0 z-40">
         <div class="max-w-3xl mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-black italic tracking-tighter flex items-center gap-2 text-gray-900 uppercase">
-                <img src="icon.svg" alt="" class="w-10 h-10">
+            <h1 class="text-2xl sm:text-3xl font-black italic tracking-tighter flex items-center gap-2 text-gray-900 uppercase">
+                <img src="icon.svg" alt="" class="w-8 h-8 sm:w-10 sm:h-10">
                 Ghisa
             </h1>
             <div class="flex gap-2 sm:gap-3">
@@ -148,32 +153,33 @@
         </div>
     </header>
 
-    <main class="flex-grow max-w-3xl mx-auto w-full p-4 relative z-10">
+    <main class="flex-grow max-w-3xl mx-auto w-full p-4 relative">
 
-        <section id="view-week" class="fade-in pb-10 flex flex-col min-h-full">
-            <div class="flex items-center justify-between mb-6 mt-2">
+        <section id="view-week" class="fade-in flex flex-col">
+            <div class="flex items-center justify-between mb-4 mt-1">
                 <h2 class="text-gray-900 font-black text-2xl uppercase tracking-tight italic">Allenamenti</h2>
             </div>
 
             <!-- Workout cards: populated via JS -->
-            <div id="workout-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+            <div id="workout-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
 
-            <button onclick="createWorkoutDay()" class="mt-5 w-full py-5 rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 text-gray-500 hover:text-gray-900 hover:border-gray-900 font-black italic uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+            <button onclick="createWorkoutDay()" class="mt-3 w-full py-4 rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 text-gray-500 hover:text-gray-900 hover:border-gray-900 font-black italic uppercase text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
                 <i class="fa-solid fa-plus text-ghisa-accent"></i> Nuovo Allenamento
             </button>
 
             <!-- Signature Footer -->
-            <div class="mt-12 mb-4 text-center">
-                <span class="text-gray-400 font-bold uppercase tracking-widest text-xs opacity-70">
+            <div class="mt-4 text-center">
+                <span class="text-gray-400 font-bold uppercase tracking-widest text-[10px] opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.2</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.3</span>
             </div>
         </section>
 
-        <div id="modal-history" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
-            <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-sport transform transition-transform flex flex-col max-h-[85vh]">
-                <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+        <!-- HISTORY: by day (with Excel export) or by exercise (with progress chart) -->
+        <div id="modal-history" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-3 sm:p-4 transition-opacity">
+            <div class="bg-white w-full max-w-md rounded-3xl p-5 shadow-sport flex flex-col h-[88vh]">
+                <div class="flex justify-between items-center mb-4">
                     <h3 class="text-2xl font-black italic uppercase text-gray-900 flex items-center gap-2">
                         <i class="fa-regular fa-calendar-check text-ghisa-neonBlue"></i> Storico
                     </h3>
@@ -182,17 +188,38 @@
                     </button>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Scegli una data</label>
-                    <input type="date" id="history-date-picker" onchange="loadHistoryDate()" class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-bold focus:outline-none focus:border-ghisa-neonBlue transition-all">
+                <div class="flex gap-1 mb-4 bg-gray-100 p-1 rounded-xl">
+                    <button type="button" onclick="showHistoryTab('date')" data-tab="date" class="history-tab flex-1 py-2 rounded-lg text-xs font-black uppercase text-gray-500">
+                        <i class="fa-regular fa-calendar mr-1"></i> Per giorno
+                    </button>
+                    <button type="button" onclick="showHistoryTab('exercise')" data-tab="exercise" class="history-tab flex-1 py-2 rounded-lg text-xs font-black uppercase text-gray-500">
+                        <i class="fa-solid fa-chart-line mr-1"></i> Per esercizio
+                    </button>
                 </div>
 
-                <div id="history-results" class="flex-grow overflow-y-auto space-y-3 pr-2 custom-scrollbar">
-                    <!-- Populated via JS -->
-                    <div class="flex flex-col items-center justify-center py-10 text-center">
-                        <i class="fa-solid fa-magnifying-glass text-4xl text-gray-300 mb-3"></i>
-                        <p class="text-gray-500 font-medium text-sm">Seleziona una data per vedere gli esercizi completati.</p>
+                <!-- By day -->
+                <div id="history-pane-date" class="flex flex-col min-h-0 flex-grow">
+                    <div class="flex gap-2 mb-4">
+                        <input type="date" id="history-date-picker" onchange="loadHistoryDate()" class="flex-grow min-w-0 bg-gray-50 border-2 border-gray-200 rounded-xl px-3 py-3 text-gray-900 font-bold focus:outline-none focus:border-ghisa-neonBlue transition-all">
+                        <button onclick="exportDayExcel()" title="Esporta il giorno in Excel" class="shrink-0 bg-gray-900 text-white px-4 rounded-xl font-black uppercase text-xs flex items-center gap-2 active:scale-95 transition-all">
+                            <i class="fa-solid fa-file-excel text-ghisa-neonGreen text-base"></i> Excel
+                        </button>
                     </div>
+                    <div id="history-results" class="flex-grow overflow-y-auto overscroll-contain space-y-3 pr-1"></div>
+                </div>
+
+                <!-- By exercise: list, then one exercise with chart -->
+                <div id="history-pane-exercise" class="hidden flex-col min-h-0 flex-grow">
+                    <input type="search" id="history-ex-search" oninput="renderExerciseIndex()" placeholder="Cerca esercizio..." autocomplete="off"
+                        class="mb-3 w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-bold focus:outline-none focus:border-ghisa-neonBlue transition-all">
+                    <div id="history-ex-index" class="flex-grow overflow-y-auto overscroll-contain space-y-2 pr-1"></div>
+                </div>
+
+                <div id="history-pane-detail" class="hidden flex-col min-h-0 flex-grow">
+                    <button onclick="showHistoryTab('exercise')" class="self-start mb-3 text-xs font-black uppercase text-gray-500 flex items-center gap-2 active:scale-95">
+                        <i class="fa-solid fa-arrow-left"></i> Tutti gli esercizi
+                    </button>
+                    <div id="history-ex-detail" class="flex-grow overflow-y-auto overscroll-contain pr-1"></div>
                 </div>
             </div>
         </div>
@@ -306,6 +333,9 @@
                 <button onclick="openSwapModal()" class="text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition-all">
                     <i class="fa-solid fa-right-left text-ghisa-accent"></i> Sostituisci
                 </button>
+                <button onclick="openExerciseHistoryFromDetail()" class="text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition-all">
+                    <i class="fa-solid fa-chart-line text-ghisa-neonBlue"></i> Progressi
+                </button>
                 <button id="ex-opt-time" onclick="toggleExerciseOption('time')" class="ex-opt opt-chip text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95">
                     <i class="fa-solid fa-hourglass-half"></i> A tempo
                 </button>
@@ -382,9 +412,9 @@
             <div id="timer-progress" class="absolute top-0 left-0 bottom-0 bg-ghisa-neonGreen w-full origin-left transition-all duration-1000 ease-linear"></div>
         </div>
 
-        <div class="max-w-3xl mx-auto px-4 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+        <div class="max-w-3xl mx-auto px-4 py-2.5 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
             <div class="flex items-center gap-3">
-                <div id="timer-icon-container" class="w-10 h-10 rounded-full bg-gray-800 border-2 border-gray-700 flex items-center justify-center text-ghisa-accent">
+                <div id="timer-icon-container" class="w-10 h-10 rounded-full bg-gray-800 border-2 border-gray-700 hidden sm:flex items-center justify-center text-ghisa-accent">
                     <i class="fa-solid fa-stopwatch text-lg"></i>
                 </div>
                 <div class="flex flex-col cursor-pointer hover:opacity-80 transition-opacity" onclick="openTimerEditModal()" title="Modifica Tempo di Recupero">
@@ -878,23 +908,51 @@
         }
 
         // --- HISTORY MODAL LOGIC --- //
-        window.openHistoryModal = () => {
+        // One place for the past: "Per giorno" (what was done on a date, exportable to Excel)
+        // and "Per esercizio" (every session of one exercise, with a progress chart)
+        function getHistoryData() {
+            return JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
+        }
+
+        window.openHistoryModal = (exerciseName) => {
             const modal = document.getElementById('modal-history');
             const datePicker = document.getElementById('history-date-picker');
-
-            // Set today as default
-            datePicker.value = getTodayString();
+            if (!datePicker.value) datePicker.value = getTodayString();
+            document.getElementById('history-ex-search').value = '';
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
 
-            loadHistoryDate(); // Load initial results
+            if (exerciseName) openExerciseHistory(exerciseName);
+            else showHistoryTab('date');
         };
 
         window.closeHistoryModal = () => {
             const modal = document.getElementById('modal-history');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        };
+
+        window.openExerciseHistoryFromDetail = () => {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if (ex) openHistoryModal(ex.name);
+        };
+
+        // pane: 'date' | 'exercise' | 'detail' (the detail lives under the "Per esercizio" tab)
+        function showHistoryPane(pane) {
+            ['date', 'exercise', 'detail'].forEach(p => {
+                const el = document.getElementById(`history-pane-${p}`);
+                el.classList.toggle('hidden', p !== pane);
+                el.classList.toggle('flex', p === pane);
+            });
+            const tab = pane === 'date' ? 'date' : 'exercise';
+            document.querySelectorAll('.history-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        }
+
+        window.showHistoryTab = (tab) => {
+            showHistoryPane(tab);
+            if (tab === 'date') loadHistoryDate();
+            else renderExerciseIndex();
         };
 
         // Read-only detail of the sets saved in a history entry
@@ -983,6 +1041,9 @@
                             <h4 class="font-black italic text-sm uppercase text-gray-700 truncate">${escapeHtml(ex.name)}</h4>
                             <p class="text-[10px] mt-1 font-bold uppercase tracking-wider text-gray-400">${subText} - ${escapeHtml(ex.dayName || ex.dayOfWeek || '')}</p>
                         </div>
+                        <button type="button" class="history-progress shrink-0 w-9 h-9 rounded-lg bg-white border border-gray-200 text-ghisa-neonBlue flex items-center justify-center active:scale-90" title="Progressi">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </button>
                         <div class="shrink-0 ${ex.completed ? 'text-ghisa-neonGreen' : 'text-gray-300'}">
                             <i class="fa-solid ${ex.completed ? 'fa-check-circle' : 'fa-circle-half-stroke'} text-xl"></i>
                         </div>
@@ -990,8 +1051,438 @@
                     ${renderHistorySets(ex)}
                     ${ex.notes && ex.notes.trim() !== '' ? `<p class="mt-3 text-xs text-gray-600 bg-white rounded-lg border border-gray-100 p-2 whitespace-pre-line"><i class="fa-solid fa-pen text-ghisa-accent mr-1"></i>${escapeHtml(ex.notes)}</p>` : ''}
                 `;
+                card.querySelector('.history-progress').addEventListener('click', () => openExerciseHistory(ex.name));
                 container.appendChild(card);
             });
+        };
+
+        // --- HISTORY BY EXERCISE --- //
+        // Every exercise ever logged, most recent first
+        function collectExerciseIndex() {
+            const index = new Map();
+            const historyData = getHistoryData();
+            Object.keys(historyData).sort().forEach(date => {
+                (historyData[date] || []).forEach(ex => {
+                    if ((ex.sets || []).length === 0 && !ex.completed) return;
+                    const key = String(ex.name || '').trim().toLowerCase();
+                    if (!key) return;
+                    const item = index.get(key) || { name: ex.name.trim(), type: ex.type || 'gym', mode: ex.mode, dates: new Set() };
+                    item.name = ex.name.trim();
+                    item.type = ex.type || 'gym';
+                    item.mode = ex.mode;
+                    item.dates.add(date);
+                    item.lastDate = date;
+                    index.set(key, item);
+                });
+            });
+            return [...index.values()].sort((a, b) => b.lastDate.localeCompare(a.lastDate));
+        }
+
+        function typeIconHtml(type, mode) {
+            if (type === 'run') return '<i class="fa-solid fa-person-running"></i>';
+            if (type === 'swim') return '<i class="fa-solid fa-person-swimming"></i>';
+            return mode === 'time' ? '<i class="fa-solid fa-hourglass-half"></i>' : '<i class="fa-solid fa-dumbbell"></i>';
+        }
+
+        window.renderExerciseIndex = () => {
+            const container = document.getElementById('history-ex-index');
+            const query = document.getElementById('history-ex-search').value.trim().toLowerCase();
+            const items = collectExerciseIndex().filter(it => it.name.toLowerCase().includes(query));
+            container.innerHTML = '';
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-center">
+                        <i class="fa-solid fa-chart-line text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 font-medium text-sm">${query ? 'Nessun esercizio trovato.' : 'Ancora nessun esercizio registrato. Spunta qualche serie e lo troverai qui.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            items.forEach(it => {
+                const row = document.createElement('button');
+                row.className = 'w-full text-left bg-gray-50 border border-gray-100 rounded-xl p-3 flex items-center gap-3 active:scale-[0.98] transition-all';
+                row.innerHTML = `
+                    <div class="w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-400 flex items-center justify-center shrink-0">${typeIconHtml(it.type, it.mode)}</div>
+                    <div class="flex-grow min-w-0">
+                        <div class="font-black italic uppercase text-sm text-gray-900 truncate">${escapeHtml(it.name)}</div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mt-0.5">${it.dates.size} ${it.dates.size === 1 ? 'sessione' : 'sessioni'} · ultima ${escapeHtml(formatShortDate(it.lastDate))}</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-300"></i>
+                `;
+                row.addEventListener('click', () => openExerciseHistory(it.name));
+                container.appendChild(row);
+            });
+        };
+
+        // All sessions of one exercise (same name), oldest first; same-day entries are merged
+        function collectSessions(name) {
+            const historyData = getHistoryData();
+            const sessions = [];
+            Object.keys(historyData).sort().forEach(date => {
+                const entries = (historyData[date] || []).filter(ex => sameName(ex.name, name) && ((ex.sets || []).length > 0 || ex.completed));
+                if (entries.length === 0) return;
+                const first = entries[0];
+                sessions.push({
+                    date,
+                    type: first.type || 'gym',
+                    mode: first.mode || 'reps',
+                    perSide: !!first.perSide,
+                    dayName: first.dayName || first.dayOfWeek || '',
+                    sets: entries.flatMap(e => e.sets || []),
+                    notes: entries.map(e => (e.notes || '').trim()).filter(Boolean).join('\n')
+                });
+            });
+            return sessions;
+        }
+
+        // Compact one-line text of a session's sets: "80×8 · 80×8 · 82,5×6"
+        function setsSummaryText(session) {
+            const sets = session.sets;
+            if (session.type !== 'gym') {
+                return sets.map(s => [s.distance ? `${s.distance}m` : '', s.count ? `×${s.count}` : '', s.time || ''].filter(Boolean).join(' ')).filter(Boolean).join(' · ');
+            }
+            return sets.map(s => {
+                const w = Number(s.weight) > 0 ? `${formatWeight(s.weight)}kg` : '';
+                if (session.mode === 'time') return [w, formatDuration(s.duration)].filter(Boolean).join(' ');
+                return Number(s.weight) > 0 ? `${formatWeight(s.weight)}×${s.reps || '–'}` : `×${s.reps || '–'}`;
+            }).filter(Boolean).join(' · ');
+        }
+
+        // What the chart follows: the heaviest load of each session; for bodyweight
+        // exercises, the most reps (or the longest time)
+        function progressMetric(sessions) {
+            const gym = sessions.filter(s => s.type === 'gym');
+            if (gym.length === 0) return null;
+            const timed = gym[gym.length - 1].mode === 'time';
+            const usesWeight = gym.some(s => s.sets.some(set => Number(set.weight) > 0));
+            const perSide = gym[gym.length - 1].perSide;
+            if (usesWeight) {
+                return {
+                    title: `Carico massimo${perSide ? ' per lato' : ''} (kg)`,
+                    value: (s) => Math.max(0, ...s.sets.map(set => Number(set.weight) || 0)),
+                    format: (v) => `${formatWeight(Math.round(v * 100) / 100)} kg`,
+                    tick: (v) => formatWeight(Math.round(v * 100) / 100)
+                };
+            }
+            if (timed) {
+                return {
+                    title: 'Tempo massimo',
+                    value: (s) => Math.max(0, ...s.sets.map(set => Number(set.duration) || 0)),
+                    format: (v) => formatDuration(v),
+                    tick: (v) => formatDuration(v)
+                };
+            }
+            return {
+                title: 'Ripetute massime',
+                value: (s) => Math.max(0, ...s.sets.map(set => Number(set.reps) || 0)),
+                format: (v) => `${v} rip`,
+                tick: (v) => String(v)
+            };
+        }
+
+        function openExerciseHistory(name) {
+            showHistoryPane('detail');
+            const container = document.getElementById('history-ex-detail');
+            const sessions = collectSessions(name);
+            const metric = progressMetric(sessions);
+            const points = metric
+                ? sessions.filter(s => s.type === 'gym').map(s => ({ date: s.date, value: metric.value(s), detail: setsSummaryText(s) })).filter(p => p.value > 0)
+                : [];
+
+            let summary = '';
+            if (points.length > 0) {
+                const best = Math.max(...points.map(p => p.value));
+                const diff = points[points.length - 1].value - points[0].value;
+                const diffText = points.length > 1 && diff !== 0 ? ` · ${diff > 0 ? '+' : '−'}${metric.format(Math.abs(diff))} dalla prima` : '';
+                summary = `<p class="text-xs font-bold text-gray-500 mb-3">Record <b class="text-gray-900">${escapeHtml(metric.format(best))}</b> · ${sessions.length} ${sessions.length === 1 ? 'sessione' : 'sessioni'}${escapeHtml(diffText)}</p>`;
+            }
+
+            container.innerHTML = `
+                <h4 class="text-xl font-black italic uppercase text-gray-900 mb-1 break-words">${escapeHtml(name)}</h4>
+                ${summary}
+                ${points.length >= 2
+                    ? `<div class="mb-1 text-[10px] font-black uppercase tracking-widest text-gray-400">${escapeHtml(metric.title)}</div><div id="progress-chart" class="relative mb-5"></div>`
+                    : (metric ? '<p class="text-xs text-gray-400 bg-gray-50 rounded-xl p-3 mb-5">Il grafico compare dalla seconda sessione.</p>' : '')}
+                <div class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Sessioni</div>
+                <div id="history-ex-sessions" class="space-y-2"></div>
+            `;
+
+            const list = container.querySelector('#history-ex-sessions');
+            sessions.slice().reverse().forEach(s => {
+                const item = document.createElement('div');
+                item.className = 'bg-gray-50 border border-gray-100 rounded-xl p-3';
+                item.innerHTML = `
+                    <div class="flex justify-between gap-2 text-[10px] font-black uppercase tracking-wider text-gray-400">
+                        <span>${escapeHtml(formatShortDate(s.date))}</span><span class="truncate">${escapeHtml(s.dayName)}</span>
+                    </div>
+                    <div class="font-black text-gray-900 text-sm mt-1 break-words">${escapeHtml(setsSummaryText(s) || '—')}${s.perSide ? ' <span class="text-[10px] text-gray-400">(per lato)</span>' : ''}</div>
+                    ${s.notes ? `<p class="text-xs text-gray-500 mt-1 whitespace-pre-line">${escapeHtml(s.notes)}</p>` : ''}
+                `;
+                list.appendChild(item);
+            });
+
+            if (points.length >= 2) renderProgressChart(container.querySelector('#progress-chart'), points, metric);
+        }
+
+        // Clean axis steps: 1, 2, 2.5, 5 × 10^n
+        function niceStep(raw) {
+            const pow = Math.pow(10, Math.floor(Math.log10(raw)));
+            const n = raw / pow;
+            return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * pow;
+        }
+
+        // Single-series line chart over time: 2px line, ringed dots, 10% wash,
+        // hairline grid, last value labeled, tap/hover tooltip on the nearest session
+        function renderProgressChart(container, points, metric) {
+            const W = Math.max(260, container.clientWidth || 320);
+            const H = 190;
+            const m = { top: 22, right: 18, bottom: 26, left: 40 };
+            const iw = W - m.left - m.right, ih = H - m.top - m.bottom;
+            const ACCENT = '#ff5722', GRID = '#e5e7eb', MUTED = '#6b7280', INK = '#111827';
+
+            const times = points.map(p => new Date(p.date + 'T00:00:00').getTime());
+            const t0 = times[0], t1 = times[times.length - 1];
+            const values = points.map(p => p.value);
+            const vMin = Math.min(...values), vMax = Math.max(...values);
+            const step = niceStep(Math.max((vMax - vMin) / 3, vMax * 0.02, 0.5));
+            let lo = Math.floor(vMin / step) * step;
+            let hi = Math.ceil(vMax / step) * step;
+            if (lo === hi) { lo -= step; hi += step; }
+            lo = Math.max(0, lo);
+
+            const x = (t) => m.left + (t1 === t0 ? iw / 2 : ((t - t0) / (t1 - t0)) * iw);
+            const y = (v) => m.top + ih - ((v - lo) / (hi - lo)) * ih;
+            const xs = times.map(x), ys = values.map(y);
+
+            const ticks = [];
+            for (let v = lo; v <= hi + step / 2; v += step) ticks.push(Math.round(v * 100) / 100);
+            const grid = ticks.map(v => `
+                <line x1="${m.left}" x2="${W - m.right}" y1="${y(v)}" y2="${y(v)}" stroke="${GRID}" stroke-width="1"/>
+                <text x="${m.left - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="${MUTED}" style="font-variant-numeric: tabular-nums">${escapeHtml(metric.tick(v))}</text>
+            `).join('');
+
+            const dateLabel = (d) => new Date(d + 'T00:00:00').toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+            const xLabelIdx = points.length > 2 && iw > 220 ? [0, Math.floor((points.length - 1) / 2), points.length - 1] : [0, points.length - 1];
+            const xLabels = [...new Set(xLabelIdx)].map((i, k, arr) => `
+                <text x="${xs[i]}" y="${H - 6}" font-size="11" fill="${MUTED}" text-anchor="${k === 0 ? 'start' : (k === arr.length - 1 ? 'end' : 'middle')}">${escapeHtml(dateLabel(points[i].date))}</text>
+            `).join('');
+
+            const line = xs.map((px, i) => `${i === 0 ? 'M' : 'L'}${px},${ys[i]}`).join(' ');
+            const area = `${line} L${xs[xs.length - 1]},${m.top + ih} L${xs[0]},${m.top + ih} Z`;
+            const dots = xs.map((px, i) => `<circle cx="${px}" cy="${ys[i]}" r="4" fill="${ACCENT}" stroke="#ffffff" stroke-width="2"/>`).join('');
+
+            const last = points.length - 1;
+            const endAnchor = xs[last] > W - 60 ? 'end' : 'middle';
+            const endLabel = `<text x="${xs[last]}" y="${ys[last] - 10}" text-anchor="${endAnchor}" font-size="12" font-weight="800" fill="${INK}">${escapeHtml(metric.format(values[last]))}</text>`;
+
+            container.innerHTML = `
+                <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escapeHtml(metric.title)}: da ${escapeHtml(metric.format(values[0]))} a ${escapeHtml(metric.format(values[last]))}" style="display:block; touch-action: pan-y">
+                    ${grid}
+                    <path d="${area}" fill="${ACCENT}" fill-opacity="0.1"/>
+                    <path d="${line}" fill="none" stroke="${ACCENT}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                    ${dots}
+                    ${endLabel}
+                    ${xLabels}
+                    <line class="crosshair" x1="0" x2="0" y1="${m.top}" y2="${m.top + ih}" stroke="#9ca3af" stroke-width="1" visibility="hidden"/>
+                    <circle class="focus-dot" r="6" fill="${ACCENT}" stroke="#ffffff" stroke-width="2" visibility="hidden"/>
+                    <rect x="${m.left - 12}" y="0" width="${iw + 24}" height="${H}" fill="transparent"/>
+                </svg>
+                <div class="chart-tip hidden absolute pointer-events-none bg-gray-900 text-white rounded-lg px-3 py-2 text-xs shadow-sport" style="max-width: 220px"></div>
+            `;
+
+            const svg = container.querySelector('svg');
+            const cross = svg.querySelector('.crosshair');
+            const focus = svg.querySelector('.focus-dot');
+            const tip = container.querySelector('.chart-tip');
+
+            const showAt = (clientX) => {
+                const rect = svg.getBoundingClientRect();
+                const px = clientX - rect.left;
+                let i = 0;
+                xs.forEach((v, k) => { if (Math.abs(v - px) < Math.abs(xs[i] - px)) i = k; });
+                cross.setAttribute('x1', xs[i]); cross.setAttribute('x2', xs[i]);
+                cross.setAttribute('visibility', 'visible');
+                focus.setAttribute('cx', xs[i]); focus.setAttribute('cy', ys[i]);
+                focus.setAttribute('visibility', 'visible');
+                tip.innerHTML = `<div class="text-gray-400 font-bold">${escapeHtml(formatShortDate(points[i].date))}</div>
+                    <div class="font-black text-sm">${escapeHtml(metric.format(values[i]))}</div>
+                    <div class="text-gray-300 break-words">${escapeHtml(points[i].detail)}</div>`;
+                tip.classList.remove('hidden');
+                const tipW = tip.offsetWidth;
+                tip.style.left = `${Math.min(Math.max(0, xs[i] - tipW / 2), W - tipW)}px`;
+                tip.style.top = `${Math.max(0, ys[i] - tip.offsetHeight - 14)}px`;
+            };
+            const hide = () => {
+                cross.setAttribute('visibility', 'hidden');
+                focus.setAttribute('visibility', 'hidden');
+                tip.classList.add('hidden');
+            };
+            svg.addEventListener('pointerdown', e => showAt(e.clientX));
+            svg.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.buttons) showAt(e.clientX); });
+            svg.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); });
+        }
+
+        // --- EXCEL EXPORT OF A DAY --- //
+        // A real .xlsx built here, without libraries, so it also works offline:
+        // an .xlsx is a zip of a few XML files (stored, not compressed)
+        const CRC_TABLE = (() => {
+            const t = new Uint32Array(256);
+            for (let n = 0; n < 256; n++) {
+                let c = n;
+                for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+                t[n] = c >>> 0;
+            }
+            return t;
+        })();
+
+        function crc32(bytes) {
+            let c = 0xFFFFFFFF;
+            for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+            return (c ^ 0xFFFFFFFF) >>> 0;
+        }
+
+        function zipFiles(files) {
+            const enc = new TextEncoder();
+            const chunks = [], central = [];
+            let offset = 0;
+            const now = new Date();
+            const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+            const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+
+            files.forEach(({ name, content }) => {
+                const nameBytes = enc.encode(name);
+                const data = enc.encode(content);
+                const crc = crc32(data);
+
+                const local = new DataView(new ArrayBuffer(30));
+                local.setUint32(0, 0x04034b50, true);
+                local.setUint16(4, 20, true);
+                local.setUint16(8, 0, true);           // stored
+                local.setUint16(10, dosTime, true);
+                local.setUint16(12, dosDate, true);
+                local.setUint32(14, crc, true);
+                local.setUint32(18, data.length, true);
+                local.setUint32(22, data.length, true);
+                local.setUint16(26, nameBytes.length, true);
+                chunks.push(new Uint8Array(local.buffer), nameBytes, data);
+
+                const dir = new DataView(new ArrayBuffer(46));
+                dir.setUint32(0, 0x02014b50, true);
+                dir.setUint16(4, 20, true);
+                dir.setUint16(6, 20, true);
+                dir.setUint16(12, dosTime, true);
+                dir.setUint16(14, dosDate, true);
+                dir.setUint32(16, crc, true);
+                dir.setUint32(20, data.length, true);
+                dir.setUint32(24, data.length, true);
+                dir.setUint16(28, nameBytes.length, true);
+                dir.setUint32(42, offset, true);
+                central.push(new Uint8Array(dir.buffer), nameBytes);
+
+                offset += 30 + nameBytes.length + data.length;
+            });
+
+            const dirSize = central.reduce((n, c) => n + c.length, 0);
+            const end = new DataView(new ArrayBuffer(22));
+            end.setUint32(0, 0x06054b50, true);
+            end.setUint16(8, files.length, true);
+            end.setUint16(10, files.length, true);
+            end.setUint32(12, dirSize, true);
+            end.setUint32(16, offset, true);
+            return new Blob([...chunks, ...central, new Uint8Array(end.buffer)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        }
+
+        function xmlEscape(v) {
+            return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // rows[0] is the header (bold, frozen); numbers stay numbers so they can be summed
+        function buildXlsx(sheetName, rows, widths) {
+            const col = (i) => { let s = ''; i++; while (i > 0) { const r = (i - 1) % 26; s = String.fromCharCode(65 + r) + s; i = Math.floor((i - 1) / 26); } return s; };
+            const sheetRows = rows.map((row, r) => `<row r="${r + 1}">${row.map((v, c) => {
+                const ref = `${col(c)}${r + 1}`;
+                const style = r === 0 ? ' s="1"' : '';
+                if (v === '' || v === null || v === undefined) return '';
+                if (typeof v === 'number' && isFinite(v)) return `<c r="${ref}"${style}><v>${v}</v></c>`;
+                return `<c r="${ref}" t="inlineStr"${style}><is><t xml:space="preserve">${xmlEscape(v)}</t></is></c>`;
+            }).join('')}</row>`).join('');
+
+            const sheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${sheetRows}</sheetData></worksheet>`;
+
+            return zipFiles([
+                { name: '[Content_Types].xml', content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>` },
+                { name: '_rels/.rels', content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+                { name: 'xl/workbook.xml', content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${xmlEscape(sheetName)}" sheetId="1" r:id="rId1"/></sheets></workbook>` },
+                { name: 'xl/_rels/workbook.xml.rels', content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+                { name: 'xl/styles.xml', content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>` },
+                { name: 'xl/worksheets/sheet1.xml', content: sheet }
+            ]);
+        }
+
+        // One row per set: easy to read for a person, a spreadsheet or an AI
+        function dayRows(date, entries) {
+            const num = (v) => (v === '' || v === null || v === undefined || isNaN(Number(v))) ? '' : Number(v);
+            const rows = [['Data', 'Allenamento', 'Esercizio', 'Tipo', 'Serie', 'Kg', 'Peso per lato', 'Ripetute', 'Tempo', 'RPE', 'Metri', 'N. ripetute', 'Tempo target', 'Recupero', 'Nota serie', 'Note esercizio']];
+            entries.forEach(ex => {
+                const type = ex.type || 'gym';
+                const typeLabel = type === 'run' ? 'Corsa' : type === 'swim' ? 'Nuoto' : (ex.mode === 'time' ? 'Palestra a tempo' : 'Palestra');
+                const sets = (ex.sets || []).length > 0 ? ex.sets : [{}];
+                sets.forEach((s, i) => {
+                    const gym = type === 'gym';
+                    rows.push([
+                        date, ex.dayName || ex.dayOfWeek || '', ex.name, typeLabel, i + 1,
+                        gym ? num(s.weight) : '', gym ? (ex.perSide ? 'sì' : 'no') : '',
+                        gym && ex.mode !== 'time' ? num(s.reps) : '',
+                        gym && ex.mode === 'time' ? formatDuration(s.duration) : '',
+                        num(s.fatigue),
+                        gym ? '' : num(s.distance), gym ? '' : num(s.count), gym ? '' : (s.time || ''), gym ? '' : (s.rest || ''),
+                        s.note || '', i === 0 ? (ex.notes || '').trim() : ''
+                    ]);
+                });
+            });
+            return rows;
+        }
+
+        // On phones: the share sheet (WhatsApp, ChatGPT, Claude...); elsewhere: a download
+        async function shareOrDownload(blob, filename, title) {
+            const file = new File([blob], filename, { type: blob.type });
+            const isPhone = window.matchMedia('(pointer: coarse)').matches;
+            if (isPhone && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ files: [file], title });
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') return;
+                }
+            }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast('Excel scaricato!', false);
+        }
+
+        window.exportDayExcel = () => {
+            const date = document.getElementById('history-date-picker').value || getTodayString();
+            const entries = (getHistoryData()[date] || []).filter(ex => ex.completed || (ex.sets || []).length > 0);
+            if (entries.length === 0) {
+                showToast('Nessun allenamento registrato in questa data.');
+                return;
+            }
+            const blob = buildXlsx(`Allenamento ${date}`, dayRows(date, entries), [11, 16, 22, 16, 6, 7, 12, 9, 9, 6, 8, 11, 12, 16, 24, 30]);
+            shareOrDownload(blob, `ghisa-${date}.xlsx`, `Allenamento del ${formatShortDate(date)}`);
         };
 
         // --- WORKOUTS (home) --- //
@@ -1002,16 +1493,16 @@
                 const exercises = workouts.filter(w => w.dayId === day.id);
                 const doneToday = exercises.filter(isExerciseDoneToday).length;
                 const card = document.createElement('button');
-                card.className = `${day.color} rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center gap-3 relative overflow-hidden border-2 border-transparent hover:border-white`;
+                card.className = `${day.color} rounded-2xl px-5 py-4 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center gap-3 relative overflow-hidden border-2 border-transparent hover:border-white`;
                 card.innerHTML = `
-                    <div class="absolute -right-4 -top-8 text-white/10 text-9xl font-black italic transform -rotate-12 select-none">${index + 1}</div>
+                    <div class="absolute -right-2 -top-5 text-white/10 text-8xl font-black italic transform -rotate-12 select-none">${index + 1}</div>
                     <div class="z-10 min-w-0">
-                        <span class="block text-2xl sm:text-3xl font-black text-white italic tracking-tight uppercase break-words leading-tight">${escapeHtml(day.name)}</span>
+                        <span class="block text-2xl font-black text-white italic tracking-tight uppercase break-words leading-tight">${escapeHtml(day.name)}</span>
                         <span class="block text-xs font-black uppercase tracking-widest text-white/80 mt-1">
                             ${exercises.length} ${exercises.length === 1 ? 'esercizio' : 'esercizi'}${doneToday > 0 ? ` · <i class="fa-solid fa-check"></i> ${doneToday} fatti oggi` : ''}
                         </span>
                     </div>
-                    <div class="bg-white text-gray-900 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 shrink-0"><i class="fa-solid fa-arrow-right text-xl"></i></div>
+                    <div class="bg-white text-gray-900 w-10 h-10 rounded-full flex items-center justify-center shadow-lg z-10 shrink-0"><i class="fa-solid fa-arrow-right"></i></div>
                 `;
                 card.addEventListener('click', () => openDay(day.id));
                 list.appendChild(card);
