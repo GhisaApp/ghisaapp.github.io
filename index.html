@@ -271,12 +271,15 @@
                 </div>
 
                 <form id="add-exercise-form" class="flex gap-3">
-                    <input type="text" id="new-exercise-name" placeholder="ES. PANCA PIANA" required
-                        class="flex-grow bg-gray-100 border-2 border-transparent rounded-xl px-5 py-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-ghisa-accent transition-all font-bold uppercase">
+                    <input type="text" id="new-exercise-name" placeholder="ES. PANCA 80x8 85x6" required autocomplete="off"
+                        class="flex-grow min-w-0 bg-gray-100 border-2 border-transparent rounded-xl px-5 py-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-ghisa-accent transition-all font-bold uppercase">
                     <button type="submit" class="bg-gray-900 hover:bg-black text-white font-black w-16 rounded-xl flex justify-center items-center transition-all active:scale-95 text-xl">
                         <i class="fa-solid fa-plus text-ghisa-accent"></i>
                     </button>
                 </form>
+                <p id="quicklog-hint" class="text-[11px] text-gray-400 font-medium mt-2 px-1">
+                    <i class="fa-solid fa-bolt text-ghisa-accent"></i> Quick log: <b>panca 80x8 85x6</b> o <b>squat 100 8 8 6</b> registra le serie già fatte.
+                </p>
             </div>
 
             <!-- List of Exercises for the Day -->
@@ -306,6 +309,51 @@
                 </div>
             </div>
 
+            <!-- Swap: machine busy? replace the exercise, keep the work block -->
+            <div class="flex flex-wrap items-center gap-2 mb-4 -mt-2">
+                <button onclick="openSwapModal()" class="text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition-all">
+                    <i class="fa-solid fa-right-left text-ghisa-accent"></i> Sostituisci
+                </button>
+                <div id="ex-detail-swapped" class="hidden"></div>
+            </div>
+
+            <!-- Target to beat (from the last session) -->
+            <div id="ex-detail-target" class="hidden"></div>
+
+            <!-- Sets/Intervals Area -->
+            <div class="bg-white rounded-3xl shadow-sport border-2 border-gray-100 overflow-hidden mb-6">
+                <div class="px-5 py-4 bg-gray-900 border-b-4 border-gray-700 flex justify-between items-center" id="ex-detail-sets-header">
+                    <h3 class="font-black text-white italic uppercase text-xl tracking-tight flex items-center gap-2">
+                        <i id="ex-detail-icon" class="fa-solid fa-layer-group text-ghisa-neonBlue"></i>
+                        <span id="ex-detail-sets-title">Serie</span>
+                    </h3>
+                    <button onclick="addSet()" class="text-xs font-black uppercase tracking-wider text-gray-900 bg-white hover:bg-gray-200 px-4 py-2 rounded-xl transition-all shadow-sport active:scale-95 flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> Aggiungi
+                    </button>
+                </div>
+
+                <div id="ex-detail-sets-container" class="bg-gray-50 p-2 sm:p-4 min-h-[100px]">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Quick Log: "80x8 85x6" or "100 8 8 6" -->
+                <form id="ex-quicklog-form" class="hidden gap-2 p-2 sm:p-4 pt-0 sm:pt-0 bg-gray-50" onsubmit="submitDetailQuickLog(event)">
+                    <input type="text" id="ex-quicklog-input" placeholder="Quick log: 80x8 85x6 @8" autocomplete="off" autocapitalize="off"
+                        class="flex-grow min-w-0 bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 font-bold focus:outline-none focus:border-ghisa-accent transition-all">
+                    <button type="submit" class="bg-gray-900 text-white font-black uppercase text-xs px-4 rounded-xl active:scale-95 transition-all">
+                        <i class="fa-solid fa-bolt text-ghisa-accent"></i> Log
+                    </button>
+                </form>
+            </div>
+
+            <!-- Notes Area: always visible -->
+            <div class="mb-6 bg-white rounded-2xl shadow-sport border-2 border-gray-100 p-4">
+                <label for="ex-detail-notes" class="flex items-center gap-2 mb-2 text-sm text-gray-900 font-black italic uppercase">
+                    <i class="fa-solid fa-pen text-ghisa-accent"></i> Note
+                </label>
+                <textarea id="ex-detail-notes" oninput="saveExerciseNotes()" rows="2" class="w-full bg-gray-50 border-2 border-transparent rounded-xl px-4 py-3 text-gray-700 font-medium focus:outline-none focus:border-gray-900 focus:bg-white transition-all resize-none" placeholder="Pin 4, presa stretta, fatica alta..."></textarea>
+            </div>
+
             <!-- Image Area -->
             <div class="relative w-full h-48 sm:h-64 rounded-3xl overflow-hidden shadow-sport border-4 border-white mb-6 bg-gray-200 group">
                 <img id="ex-detail-img" src="" class="w-full h-full object-cover hidden" alt="Foto Esercizio">
@@ -321,34 +369,6 @@
                     </div>
                 </div>
                 <input type="file" id="ex-image-upload" accept="image/*" class="hidden" onchange="handleDetailImageUpload(event)">
-            </div>
-
-            <!-- Sets/Intervals Area -->
-            <div class="bg-white rounded-3xl shadow-sport border-2 border-gray-100 overflow-hidden mb-8">
-                <div class="px-5 py-4 bg-gray-900 border-b-4 border-gray-700 flex justify-between items-center" id="ex-detail-sets-header">
-                    <h3 class="font-black text-white italic uppercase text-xl tracking-tight flex items-center gap-2">
-                        <i id="ex-detail-icon" class="fa-solid fa-layer-group text-ghisa-neonBlue"></i>
-                        <span id="ex-detail-sets-title">Serie</span>
-                    </h3>
-                    <button onclick="addSet()" class="text-xs font-black uppercase tracking-wider text-gray-900 bg-white hover:bg-gray-200 px-4 py-2 rounded-xl transition-all shadow-sport active:scale-95 flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> Aggiungi
-                    </button>
-                </div>
-
-                <div id="ex-detail-sets-container" class="bg-gray-50 p-2 sm:p-4 min-h-[100px]">
-                    <!-- Populated via JS -->
-                </div>
-            </div>
-
-            <!-- Notes Area -->
-            <div class="mb-8 relative">
-                <button onclick="toggleNotes()" id="ex-detail-notes-btn" class="w-full bg-white rounded-2xl shadow-sport border-2 border-gray-100 p-4 flex justify-between items-center text-gray-900 font-black italic uppercase transition-all active:scale-[0.98] z-10 relative">
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-pen text-ghisa-accent"></i> <span id="ex-detail-notes-label">Aggiungi Note</span></span>
-                    <i id="ex-detail-notes-chevron" class="fa-solid fa-chevron-down text-gray-400 transition-transform duration-300"></i>
-                </button>
-                <div id="ex-detail-notes-container" class="hidden bg-white rounded-b-2xl shadow-sport border-x-2 border-b-2 border-gray-100 overflow-hidden -mt-4 pt-6 p-4 transition-all origin-top">
-                    <textarea id="ex-detail-notes" oninput="saveExerciseNotes()" class="w-full bg-gray-50 border-2 border-transparent rounded-xl p-4 text-gray-700 font-medium focus:outline-none focus:border-gray-900 focus:bg-white transition-all resize-none h-28" placeholder="Aggiungi dettagli, sensazioni, o variazioni..."></textarea>
-                </div>
             </div>
 
             <!-- Delete Button -->
@@ -386,7 +406,7 @@
                 <button onclick="adjustTimer(30)" class="w-10 h-10 rounded-lg hover:bg-gray-700 text-white font-bold text-sm transition-colors active:scale-95 flex items-center justify-center">
                     +30<span class="text-[10px] text-gray-400">s</span>
                 </button>
-                <button onclick="stopTimer()" id="btn-timer-stop" class="ml-1 sm:ml-2 bg-gray-700 text-gray-300 hover:text-white hover:bg-red-500 px-3 sm:px-4 h-10 rounded-lg font-black text-xs sm:text-sm uppercase tracking-wider transition-all active:scale-95">
+                <button onclick="toggleTimer()" id="btn-timer-stop" class="ml-1 sm:ml-2 bg-gray-700 text-gray-300 hover:text-white hover:bg-red-500 px-3 sm:px-4 h-10 rounded-lg font-black text-xs sm:text-sm uppercase tracking-wider transition-all active:scale-95">
                     Stop
                 </button>
             </div>
@@ -430,7 +450,29 @@
         </div>
     </div>
 
-    <div id="toast" class="fixed top-20 left-4 right-4 z-[200] hidden justify-center pointer-events-none">
+    <div id="modal-swap" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-sport flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 class="text-2xl font-black italic uppercase text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-right-left text-ghisa-accent"></i> Sostituisci
+                </h3>
+                <button onclick="closeSwapModal()" class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-sm text-gray-500 mb-4">Macchinario occupato? Le serie restano: se hai già fatto il nuovo esercizio, ripartono dai carichi dell'ultima volta.</p>
+            <form onsubmit="submitSwap(event)" class="flex gap-2 mb-4">
+                <input type="text" id="swap-input" placeholder="ES. HACK SQUAT" autocomplete="off" required
+                    class="flex-grow min-w-0 bg-gray-100 border-2 border-transparent rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 font-bold uppercase focus:outline-none focus:border-ghisa-accent transition-all">
+                <button type="submit" class="bg-gray-900 text-white font-black px-4 rounded-xl active:scale-95 transition-all">
+                    <i class="fa-solid fa-check text-ghisa-neonGreen"></i>
+                </button>
+            </form>
+            <div id="swap-suggestions" class="flex flex-wrap gap-2 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <div id="toast"class="fixed top-20 left-4 right-4 z-[200] hidden justify-center pointer-events-none">
         <div id="toast-text" class="max-w-md bg-red-600 text-white font-bold text-sm px-4 py-3 rounded-xl shadow-sport text-center"></div>
     </div>
 
@@ -520,8 +562,14 @@
             const today = getTodayString();
             let historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
 
-            // Today's entry holds only the exercises checked off today
-            const doneToday = workouts.filter(w => w.completed && w.completedOn === today);
+            // Today's entry holds the exercises checked off today, or with at least one set done today;
+            // for those, only today's sets are kept
+            const doneToday = workouts
+                .filter(w => (w.completed && w.completedOn === today) || (w.sets || []).some(isSetDoneToday))
+                .map(w => {
+                    const todaySets = (w.sets || []).filter(isSetDoneToday);
+                    return { ...w, sets: todaySets.length > 0 ? todaySets : (w.sets || []) };
+                });
             if (doneToday.length > 0) {
                 historyData[today] = stripImages(doneToday);
             } else {
@@ -534,6 +582,126 @@
         function setCompleted(ex, isChecked) {
             ex.completed = isChecked;
             ex.completedOn = isChecked ? getTodayString() : null;
+        }
+
+        // A set's check is tied to the day it was ticked: on another day it shows up
+        // unchecked again, with last session's numbers already filled in
+        function isSetDoneToday(set) {
+            return set.doneOn === getTodayString();
+        }
+
+        // Same for the exercise: a check from last week does not count today
+        function isExerciseDoneToday(ex) {
+            return !!ex.completed && ex.completedOn === getTodayString();
+        }
+
+        // Exercise-level check: ticks (or unticks) all of today's sets too
+        function markExerciseDone(ex, isChecked) {
+            setCompleted(ex, isChecked);
+            const today = getTodayString();
+            (ex.sets || []).forEach(s => {
+                if (isChecked) s.doneOn = today;
+                else if (s.doneOn === today) s.doneOn = null;
+            });
+        }
+
+        // After a set check: all sets done → exercise done; one unticked → not done anymore
+        function syncCompletion(ex) {
+            const sets = ex.sets || [];
+            if (sets.length > 0 && sets.every(isSetDoneToday)) {
+                setCompleted(ex, true);
+            } else if (isExerciseDoneToday(ex)) {
+                setCompleted(ex, false);
+            }
+        }
+
+        function sameName(a, b) {
+            return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+        }
+
+        // Most recent session before today for an exercise with this name (by name, so it
+        // also works after a swap). Returns { date, sets, notes } or null.
+        function getLastSession(name, type) {
+            const today = getTodayString();
+            const historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
+            const dates = Object.keys(historyData).filter(d => d < today).sort().reverse();
+            for (const date of dates) {
+                const entry = (historyData[date] || []).find(ex => sameName(ex.name, name) && (ex.type || 'gym') === type);
+                if (entry && (entry.sets || []).length > 0) return { date, sets: entry.sets, notes: entry.notes || '' };
+            }
+            return null;
+        }
+
+        function copySetValues(set) {
+            const { doneOn, ...values } = set;
+            return values;
+        }
+
+        function formatWeight(w) {
+            return String(w).replace('.', ',');
+        }
+
+        function formatShortDate(dateStr) {
+            return new Date(dateStr + 'T00:00:00').toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+
+        // --- QUICK LOG PARSER --- //
+        // "panca 80x8 85x6"  → name "panca", sets 80kg×8, 85kg×6
+        // "squat 100 8 8 6"  → first bare number is the load, the next ones are reps
+        // "80x8x3"           → 3 sets of 80kg×8;  "@8" after a set → RPE 8
+        // "100kg 8 8"        → load in kg, then reps;  words after the numbers → note of the last set
+        function parseQuickLog(text) {
+            const tokens = text.trim().split(/[\s;]+/).filter(Boolean);
+            const nameParts = [];
+            const noteParts = [];
+            const sets = [];
+            let weight = null;
+            let started = false;
+            const num = (s) => parseFloat(s.replace(',', '.'));
+            const N = '(\\d+(?:[.,]\\d+)?)';
+            const reWxR = new RegExp(`^${N}(?:kg)?[x×*](\\d+)(?:[x×*](\\d+))?(?:@${N})?$`);
+            const reKg = new RegExp(`^${N}kg$`);
+            const reRpe = new RegExp(`^@${N}$`);
+            const reBare = new RegExp(`^${N}(?:@${N})?$`);
+
+            for (const raw of tokens) {
+                const t = raw.toLowerCase().replace(/[,.]+$/, '');
+                let m;
+                if ((m = t.match(reWxR))) {
+                    weight = num(m[1]);
+                    const times = Math.min(parseInt(m[3] || '1'), 20);
+                    for (let i = 0; i < times; i++) {
+                        sets.push({ weight, reps: parseInt(m[2]), fatigue: m[4] ? num(m[4]) : '' });
+                    }
+                    started = true;
+                } else if ((m = t.match(reKg))) {
+                    weight = num(m[1]);
+                    started = true;
+                } else if ((m = t.match(reRpe)) && sets.length > 0) {
+                    sets[sets.length - 1].fatigue = num(m[1]);
+                } else if ((m = t.match(reBare))) {
+                    if (weight === null) {
+                        weight = num(m[1]);
+                    } else {
+                        sets.push({ weight, reps: Math.round(num(m[1])), fatigue: m[2] ? num(m[2]) : '' });
+                    }
+                    started = true;
+                } else if (!started) {
+                    nameParts.push(raw);
+                } else {
+                    noteParts.push(raw);
+                }
+            }
+
+            if (noteParts.length > 0 && sets.length > 0) sets[sets.length - 1].note = noteParts.join(' ');
+            return { name: nameParts.join(' '), sets, weight, hasNumbers: started };
+        }
+
+        // Logged sets replace the exercise's sets and count as done today
+        function applyQuickLog(ex, parsedSets) {
+            const today = getTodayString();
+            ex.sets = parsedSets.map(s => ({ reps: s.reps, weight: s.weight, fatigue: s.fatigue, note: s.note || '', doneOn: today }));
+            syncCompletion(ex);
         }
 
         // Text from the user (or an imported file) must never be read as HTML
@@ -595,6 +763,7 @@
                         <span class="font-black text-gray-900">${show(s.reps)}</span>
                         <span class="font-black text-gray-900">${show(s.weight)}</span>
                         <span class="font-black text-ghisa-accent">${show(s.fatigue)}</span>
+                        ${s.note ? `<span class="col-span-4 text-[11px] text-gray-500 italic pt-0.5">${escapeHtml(s.note)}</span>` : ''}
                     </div>
                 `).join('');
                 return `
@@ -630,8 +799,8 @@
             let historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
             const snapshot = historyData[dateStr] || [];
 
-            // Filter only exercises marked as completed for that day's snapshot
-            const completedExercises = snapshot.filter(ex => ex.completed);
+            // Completed exercises, plus the ones with only some sets done
+            const completedExercises = snapshot.filter(ex => ex.completed || (ex.sets || []).length > 0);
 
             if (completedExercises.length === 0) {
                 container.innerHTML = `
@@ -665,8 +834,8 @@
                             <h4 class="font-black italic text-sm uppercase text-gray-700 truncate">${escapeHtml(ex.name)}</h4>
                             <p class="text-[10px] mt-1 font-bold uppercase tracking-wider text-gray-400">${subText} - ${escapeHtml(ex.dayOfWeek)}</p>
                         </div>
-                        <div class="shrink-0 text-ghisa-neonGreen">
-                            <i class="fa-solid fa-check-circle text-xl"></i>
+                        <div class="shrink-0 ${ex.completed ? 'text-ghisa-neonGreen' : 'text-gray-300'}">
+                            <i class="fa-solid ${ex.completed ? 'fa-check-circle' : 'fa-circle-half-stroke'} text-xl"></i>
                         </div>
                     </div>
                     ${renderHistorySets(exType, sets)}
@@ -706,7 +875,8 @@
                 }
             });
             const input = document.getElementById('new-exercise-name');
-            if(type === 'gym') input.placeholder = "ES. PANCA PIANA";
+            document.getElementById('quicklog-hint').classList.toggle('hidden', type !== 'gym');
+            if(type === 'gym') input.placeholder = "ES. PANCA 80x8 85x6";
             if(type === 'run') input.placeholder = "ES. FARTLEK 5KM";
             if(type === 'swim') input.placeholder = "ES. STILE LIBERO";
         };
@@ -714,8 +884,8 @@
         window.resetDayCheckmarks = () => {
             let hasCompleted = false;
             workouts.forEach(w => {
-                if(w.dayOfWeek === currentDay && w.completed) {
-                    setCompleted(w, false);
+                if(w.dayOfWeek === currentDay && (w.completed || (w.sets || []).some(isSetDoneToday))) {
+                    markExerciseDone(w, false);
                     hasCompleted = true;
                 }
             });
@@ -760,7 +930,7 @@
                 if(exType === 'run') { typeColorClass = 'border-l-yellow-400'; typeIcon = '<i class="fa-solid fa-person-running"></i>'; }
                 if(exType === 'swim') { typeColorClass = 'border-l-cyan-400'; typeIcon = '<i class="fa-solid fa-person-swimming"></i>'; }
 
-                const borderClass = ex.completed ? 'border-l-8 border-l-ghisa-neonGreen bg-gray-50 opacity-80' : `border-l-8 ${typeColorClass} bg-white`;
+                const borderClass = isExerciseDoneToday(ex) ? 'border-l-8 border-l-ghisa-neonGreen bg-gray-50 opacity-80' : `border-l-8 ${typeColorClass} bg-white`;
                 const card = document.createElement('div');
                 card.className = `${borderClass} rounded-2xl p-3 shadow-sm border-t border-r border-b border-gray-200 flex items-center gap-4 cursor-pointer hover:shadow-sport transition-all active:scale-[0.98] slide-up`;
                 card.style.animationDelay = `${index * 0.05}s`;
@@ -771,9 +941,12 @@
                     : `<div class="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center shrink-0 border-2 border-gray-200 text-gray-400 text-xl">${typeIcon}</div>`;
 
                 const setsCount = ex.sets ? ex.sets.length : 0;
+                const doneCount = setsCount > 0 ? ex.sets.filter(isSetDoneToday).length : 0;
                 let subText = '';
                 if(exType === 'gym') {
-                    subText = `<span class="font-bold text-gray-700">${setsCount} SERIE</span>`;
+                    subText = doneCount > 0 && !isExerciseDoneToday(ex)
+                        ? `<span class="font-black text-green-600">${doneCount}/${setsCount} SERIE</span>`
+                        : `<span class="font-bold text-gray-700">${setsCount} SERIE</span>`;
                     const maxW = setsCount > 0 ? Math.max(...ex.sets.map(s => Number(s.weight) || 0)) : 0;
                     if(maxW > 0) {
                         subText += ` <span class="text-gray-400 mx-1">|</span> <span class="font-black text-gray-900">MAX ${maxW}kg</span>`;
@@ -785,11 +958,11 @@
                 card.innerHTML = `
                     ${imgHtml}
                     <div class="flex-grow overflow-hidden py-1">
-                        <h4 class="font-black italic text-lg uppercase truncate ${ex.completed ? 'line-through text-gray-400' : 'text-gray-900'}">${escapeHtml(ex.name)}</h4>
+                        <h4 class="font-black italic text-lg uppercase truncate ${isExerciseDoneToday(ex) ? 'line-through text-gray-400' : 'text-gray-900'}">${escapeHtml(ex.name)}</h4>
                         <p class="text-xs mt-1 uppercase tracking-wider">${subText}</p>
                     </div>
                     <div class="shrink-0 px-2" onclick="event.stopPropagation()">
-                        <input type="checkbox" class="checkbox-custom" ${ex.completed ? 'checked' : ''}>
+                        <input type="checkbox" class="checkbox-custom" ${isExerciseDoneToday(ex) ? 'checked' : ''}>
                     </div>
                 `;
                 card.querySelector('input[type=checkbox]').addEventListener('change', (e) => toggleExerciseListComplete(ex.id, e.target.checked));
@@ -800,33 +973,69 @@
         document.getElementById('add-exercise-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const input = document.getElementById('new-exercise-name');
-            const name = input.value.trim();
-            if(!name || !currentDay) return;
+            const text = input.value.trim();
+            if(!text || !currentDay) return;
 
-            let initialSet = selectedActivityType === 'gym'
-                ? { reps: '', weight: '', fatigue: '' }
-                : { distance: '', count: '', time: '', rest: '' };
+            // Gym: the text may be a quick log ("panca 80x8 85x6")
+            const parsed = selectedActivityType === 'gym' ? parseQuickLog(text) : { name: text, sets: [], weight: null, hasNumbers: false };
+            const name = parsed.name.trim();
+            if (!name) {
+                showToast('Scrivi prima il nome dell\'esercizio, poi i numeri. Es: panca 80x8 85x6');
+                return;
+            }
 
-            workouts.push({
+            if (parsed.sets.length > 0) {
+                // Logging an exercise already in today's plan: exact name, or the only one starting with it
+                const dayGym = workouts.filter(w => w.dayOfWeek === currentDay && (w.type || 'gym') === 'gym');
+                const lower = name.toLowerCase();
+                const prefixMatches = dayGym.filter(w => w.name.trim().toLowerCase().startsWith(lower));
+                const existing = dayGym.find(w => sameName(w.name, name)) || (prefixMatches.length === 1 ? prefixMatches[0] : null);
+                if (existing) {
+                    applyQuickLog(existing, parsed.sets);
+                    saveToStorage();
+                    input.value = '';
+                    input.blur();
+                    renderDayList();
+                    showToast(`Registrato: ${existing.name} · ${parsed.sets.length} serie`, false);
+                    return;
+                }
+            }
+
+            let sets;
+            if (selectedActivityType !== 'gym') {
+                sets = [{ distance: '', count: '', time: '', rest: '' }];
+            } else if (parsed.weight !== null && parsed.sets.length === 0) {
+                // "panca 80": just the planned load
+                sets = [{ reps: '', weight: parsed.weight, fatigue: '' }];
+            } else {
+                // Pre-fill from the last time an exercise with this name was done
+                const last = getLastSession(name, 'gym');
+                sets = last ? last.sets.map(copySetValues) : [{ reps: '', weight: '', fatigue: '' }];
+            }
+
+            const ex = {
                 id: generateId(),
                 dayOfWeek: currentDay,
                 type: selectedActivityType,
                 name: name,
                 completed: false,
                 image: null,
-                sets: [initialSet],
+                sets: sets,
                 createdAt: Date.now()
-            });
+            };
+            if (parsed.sets.length > 0) applyQuickLog(ex, parsed.sets);
+            workouts.push(ex);
 
             saveToStorage();
             input.value = '';
             input.blur();
             renderDayList();
+            if (parsed.sets.length > 0) showToast(`Registrato: ${name} · ${parsed.sets.length} serie`, false);
         });
 
         window.toggleExerciseListComplete = (id, isChecked) => {
             const ex = workouts.find(w => w.id === id);
-            if (ex) { setCompleted(ex, isChecked); saveToStorage(); renderDayList(); }
+            if (ex) { markExerciseDone(ex, isChecked); saveToStorage(); renderDayList(); }
         };
 
         window.openExercise = (id) => {
@@ -857,7 +1066,7 @@
             const exType = ex.type || 'gym';
 
             document.getElementById('ex-detail-name').value = ex.name;
-            document.getElementById('ex-detail-completed').checked = ex.completed;
+            document.getElementById('ex-detail-completed').checked = isExerciseDoneToday(ex);
 
             const indicator = document.getElementById('ex-detail-type-indicator');
             const iconEl = document.getElementById('ex-detail-icon');
@@ -893,6 +1102,104 @@
                 placeholderEl.classList.remove('hidden');
             }
 
+            document.getElementById('ex-detail-notes').value = ex.notes || '';
+            document.getElementById('ex-quicklog-form').classList.toggle('hidden', exType !== 'gym');
+            document.getElementById('ex-quicklog-form').classList.toggle('flex', exType === 'gym');
+
+            const swappedEl = document.getElementById('ex-detail-swapped');
+            if (ex.swappedFrom) {
+                swappedEl.className = 'flex items-center gap-2 text-xs font-bold text-gray-500';
+                swappedEl.innerHTML = `
+                    <span>Al posto di <b class="uppercase text-gray-700">${escapeHtml(ex.swappedFrom)}</b></span>
+                    <button type="button" class="font-black uppercase text-ghisa-accent underline">Ripristina</button>
+                `;
+                swappedEl.querySelector('button').addEventListener('click', () => swapExercise(ex.swappedFrom));
+            } else {
+                swappedEl.className = 'hidden';
+                swappedEl.innerHTML = '';
+            }
+
+            renderSetsArea();
+        }
+
+        // Best set of a session: heaviest load, then most reps at that load
+        function getTopSet(sets) {
+            const valid = sets.filter(s => Number(s.reps) > 0);
+            if (valid.length === 0) return null;
+            return valid.reduce((best, s) => {
+                const w = Number(s.weight) || 0, r = Number(s.reps);
+                if (!best || w > best.weight || (w === best.weight && r > best.reps)) return { weight: w, reps: r };
+                return best;
+            }, null);
+        }
+
+        function beatsTopSet(set, top) {
+            const w = Number(set.weight) || 0, r = Number(set.reps) || 0;
+            return r > 0 && (w > top.weight || (w === top.weight && r > top.reps));
+        }
+
+        function renderTarget(ex) {
+            const targetEl = document.getElementById('ex-detail-target');
+            const last = (ex.type || 'gym') === 'gym' ? getLastSession(ex.name, 'gym') : null;
+            const top = last ? getTopSet(last.sets) : null;
+            if (!top) {
+                targetEl.className = 'hidden';
+                targetEl.innerHTML = '';
+                return;
+            }
+
+            const lastText = last.sets
+                .filter(s => Number(s.reps) > 0)
+                .map(s => `${Number(s.weight) > 0 ? formatWeight(s.weight) + '×' : '×'}${s.reps}`)
+                .join(' · ');
+            const goal = top.weight > 0
+                ? `<b>${formatWeight(top.weight + 2.5)}kg × ${top.reps}</b> oppure <b>${formatWeight(top.weight)}kg × ${top.reps + 1}</b>`
+                : `<b>× ${top.reps + 1}</b> ripetute`;
+            const beaten = (ex.sets || []).some(s => isSetDoneToday(s) && beatsTopSet(s, top));
+
+            targetEl.className = `mb-4 rounded-2xl p-4 border-2 shadow-sport ${beaten ? 'bg-green-50 border-green-300' : 'bg-white border-gray-100'}`;
+            targetEl.innerHTML = `
+                <div class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Ultima volta · ${escapeHtml(formatShortDate(last.date))}</div>
+                <div class="font-black text-gray-900 mb-2">${escapeHtml(lastText)}</div>
+                <div class="text-sm text-gray-700 flex items-start gap-2">
+                    ${beaten
+                        ? '<i class="fa-solid fa-fire text-ghisa-accent mt-0.5"></i><span><b>Superato!</b> Hai battuto la settimana scorsa.</span>'
+                        : `<i class="fa-solid fa-arrow-trend-up text-ghisa-accent mt-0.5"></i><span>Oggi per progredire: ${goal}</span>`}
+                </div>
+            `;
+        }
+
+        function stepperHtml(idx, field, value, step, inputMode, placeholder) {
+            const btn = 'w-7 h-10 shrink-0 rounded-lg bg-gray-200 text-gray-700 font-black text-[10px] active:scale-90 active:bg-gray-300 transition-all';
+            return `
+                <div class="flex-1 min-w-0 flex items-center gap-0.5 bg-gray-50 rounded-lg p-0.5">
+                    <button type="button" onclick="stepSet(${idx}, '${field}', -${step})" class="${btn}">−${formatWeight(step)}</button>
+                    <input type="text" inputmode="${inputMode}" placeholder="${placeholder}" value="${escapeHtml(value === '' || value === undefined ? '' : formatWeight(value))}"
+                        oninput="updateSetData(${idx}, '${field}', this.value)"
+                        class="w-full min-w-0 bg-transparent text-center text-gray-900 font-black text-base focus:outline-none focus:bg-white rounded-md py-2 px-0">
+                    <button type="button" onclick="stepSet(${idx}, '${field}', ${step})" class="${btn}">+${formatWeight(step)}</button>
+                </div>
+            `;
+        }
+
+        function checkButtonHtml(idx, done, sizeClass) {
+            return `
+                <button type="button" onclick="toggleSetDone(${idx})" title="${done ? 'Serie fatta' : 'Segna come fatta e avvia recupero'}"
+                    class="${sizeClass} shrink-0 rounded-xl flex items-center justify-center text-xl transition-all active:scale-90 ${done ? 'bg-ghisa-neonGreen text-white shadow-[0_4px_15px_rgba(0,230,118,0.4)]' : 'bg-white text-gray-300 border-2 border-dashed border-gray-300'}">
+                    <i class="fa-solid fa-check"></i>
+                </button>
+            `;
+        }
+
+        // Sets, target and completion check: re-rendered on every set change
+        function renderSetsArea() {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if(!ex) return;
+            const exType = ex.type || 'gym';
+
+            document.getElementById('ex-detail-completed').checked = isExerciseDoneToday(ex);
+            renderTarget(ex);
+
             const setsContainer = document.getElementById('ex-detail-sets-container');
             setsContainer.innerHTML = '';
             if(!ex.sets) ex.sets = [];
@@ -901,60 +1208,55 @@
                 setsContainer.innerHTML = `<div class="p-8 text-center text-sm font-bold uppercase tracking-widest text-gray-400">Nessuna serie/ripetuta registrata.</div>`;
             } else if(exType === 'gym') {
                 const tableHeader = document.createElement('div');
-                tableHeader.className = "grid grid-cols-[25px_1fr_1fr_1fr_80px] sm:grid-cols-[30px_1fr_1fr_1fr_90px] gap-2 px-1 sm:px-2 py-2 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2";
+                tableHeader.className = "flex gap-2 px-2 pb-1 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest";
                 tableHeader.innerHTML = `
-                    <div class="text-center">SET</div>
-                    <div class="text-center">REPS</div>
-                    <div class="text-center">KG</div>
-                    <div class="text-center text-ghisa-accent">RPE</div>
-                    <div class="text-right">AZIONI</div>
+                    <div class="flex-grow flex gap-1.5"><div class="flex-1 text-center">Kg</div><div class="flex-1 text-center">Reps</div></div>
+                    <div class="w-12 sm:w-14 text-center">Fatta</div>
                 `;
                 setsContainer.appendChild(tableHeader);
 
                 ex.sets.forEach((set, idx) => {
+                    const done = isSetDoneToday(set);
                     const row = document.createElement('div');
-                    row.className = "grid grid-cols-[25px_1fr_1fr_1fr_80px] sm:grid-cols-[30px_1fr_1fr_1fr_90px] gap-2 items-center bg-white px-2 py-3 rounded-xl mb-2 border border-gray-100 shadow-sm";
+                    row.className = `flex items-stretch gap-2 p-2 rounded-xl mb-2 border shadow-sm transition-colors ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
 
                     row.innerHTML = `
-                        <div class="text-base sm:text-lg font-black italic text-gray-300 text-center">${idx + 1}</div>
-                        <div>
-                            <input type="number" min="0" placeholder="0" value="${escapeHtml(set.reps)}" oninput="updateSetData(${idx}, 'reps', this.value)"
-                                class="w-full bg-gray-50 border-2 border-transparent rounded-lg py-2 text-center text-gray-900 font-black text-sm sm:text-base focus:outline-none focus:border-ghisa-neonBlue focus:bg-white transition-all px-0">
+                        <div class="flex-grow min-w-0 flex flex-col gap-1.5">
+                            <div class="flex gap-1.5">
+                                ${stepperHtml(idx, 'weight', set.weight, 2.5, 'decimal', 'kg')}
+                                ${stepperHtml(idx, 'reps', set.reps, 1, 'numeric', 'reps')}
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-6 shrink-0 text-center text-sm font-black italic text-gray-300">${idx + 1}</span>
+                                <input type="text" inputmode="decimal" placeholder="RPE" value="${escapeHtml(set.fatigue === '' || set.fatigue === undefined ? '' : formatWeight(set.fatigue))}"
+                                    oninput="updateSetData(${idx}, 'fatigue', this.value)"
+                                    class="w-12 shrink-0 bg-gray-50 rounded-lg py-1.5 text-center text-ghisa-accent font-black text-sm focus:outline-none focus:ring-2 focus:ring-ghisa-accent placeholder-gray-300">
+                                <input type="text" placeholder="Nota serie (pin 4, presa stretta...)" value="${escapeHtml(set.note)}"
+                                    oninput="updateSetData(${idx}, 'note', this.value)"
+                                    class="flex-grow min-w-0 bg-gray-50 rounded-lg py-1.5 px-2 text-gray-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder-gray-300">
+                                <button type="button" onclick="removeSet(${idx})" title="Elimina" class="w-7 h-7 shrink-0 rounded-lg text-gray-300 hover:text-white hover:bg-red-500 flex items-center justify-center transition-all">
+                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <input type="number" min="0" step="0.5" placeholder="Kg" value="${escapeHtml(set.weight)}" oninput="updateSetData(${idx}, 'weight', this.value)"
-                                class="w-full bg-gray-50 border-2 border-transparent rounded-lg py-2 text-center text-gray-900 font-black text-sm sm:text-base focus:outline-none focus:border-ghisa-neonBlue focus:bg-white transition-all px-0">
-                        </div>
-                        <div>
-                            <input type="number" min="1" max="10" placeholder="1-10" value="${escapeHtml(set.fatigue)}" oninput="updateSetData(${idx}, 'fatigue', this.value)"
-                                class="w-full bg-gray-50 border-2 border-transparent rounded-lg py-2 text-center text-ghisa-accent font-black text-sm sm:text-base focus:outline-none focus:border-ghisa-accent focus:bg-white transition-all px-0">
-                        </div>
-                        <div class="flex justify-end gap-1 sm:gap-2">
-                            <button onclick="startTimerFromSet()" title="Avvia Recupero" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-white bg-ghisa-accent hover:bg-ghisa-accentHover shadow-neon-orange flex items-center justify-center transition-all active:scale-95">
-                                <i class="fa-solid fa-stopwatch text-sm sm:text-base"></i>
-                            </button>
-                            <button onclick="removeSet(${idx})" title="Elimina" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-gray-400 hover:text-white hover:bg-red-500 bg-gray-100 flex items-center justify-center transition-all">
-                                <i class="fa-solid fa-xmark text-sm sm:text-base"></i>
-                            </button>
-                        </div>
+                        ${checkButtonHtml(idx, done, 'w-12 sm:w-14')}
                     `;
                     setsContainer.appendChild(row);
                 });
             } else {
                 ex.sets.forEach((set, idx) => {
+                    const done = isSetDoneToday(set);
                     const block = document.createElement('div');
-                    block.className = "bg-white p-4 rounded-2xl mb-3 border border-gray-200 shadow-sm relative";
+                    block.className = `p-4 rounded-2xl mb-3 border shadow-sm relative ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`;
 
                     block.innerHTML = `
                         <div class="flex justify-between items-center mb-3 border-b border-gray-100 pb-2">
                             <span class="text-sm font-black italic text-gray-400">BLOCCO ${idx + 1}</span>
-                            <div class="flex gap-2">
-                                <button onclick="startTimerFromSet()" class="px-3 h-8 rounded-lg text-white font-bold text-xs uppercase bg-ghisa-accent hover:bg-ghisa-accentHover shadow-neon-orange flex items-center gap-1 transition-all active:scale-95">
-                                    <i class="fa-solid fa-stopwatch"></i> Rec
-                                </button>
+                            <div class="flex items-center gap-2">
                                 <button onclick="removeSet(${idx})" class="w-8 h-8 rounded-lg text-gray-400 hover:text-white hover:bg-red-500 bg-gray-100 flex items-center justify-center transition-all">
                                     <i class="fa-solid fa-trash text-xs"></i>
                                 </button>
+                                ${checkButtonHtml(idx, done, 'w-10 h-10')}
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
@@ -983,64 +1285,68 @@
                     setsContainer.appendChild(block);
                 });
             }
-
-            const notesInput = document.getElementById('ex-detail-notes');
-            const notesBtnLabel = document.getElementById('ex-detail-notes-label');
-            const notesContainer = document.getElementById('ex-detail-notes-container');
-            const notesChevron = document.getElementById('ex-detail-notes-chevron');
-
-            notesInput.value = ex.notes || '';
-            notesContainer.classList.add('hidden');
-            notesContainer.classList.remove('slide-up');
-            notesChevron.style.transform = 'rotate(0deg)';
-
-            if (ex.notes && ex.notes.trim() !== '') {
-                notesBtnLabel.innerHTML = 'Vedi/Modifica Note <span class="ml-2 w-2 h-2 rounded-full bg-ghisa-accent inline-block shadow-neon-orange shadow-sm"></span>';
-            } else {
-                notesBtnLabel.textContent = 'Aggiungi Note';
-            }
         }
 
         window.saveExerciseName = () => {
             const ex = workouts.find(w => w.id === currentExerciseId);
             const val = document.getElementById('ex-detail-name').value.trim();
-            if(ex && val) { ex.name = val; saveToStorage(); }
+            if(ex && val) { ex.name = val; saveToStorage(); renderTarget(ex); }
         };
 
         window.toggleDetailCompleted = () => {
             const ex = workouts.find(w => w.id === currentExerciseId);
-            if(ex) { setCompleted(ex, document.getElementById('ex-detail-completed').checked); saveToStorage(); }
+            if(ex) { markExerciseDone(ex, document.getElementById('ex-detail-completed').checked); saveToStorage(); renderSetsArea(); }
         };
 
-        window.toggleNotes = () => {
-            const container = document.getElementById('ex-detail-notes-container');
-            const chevron = document.getElementById('ex-detail-notes-chevron');
-            if (container.classList.contains('hidden')) {
-                container.classList.remove('hidden');
-                container.classList.add('slide-up');
-                chevron.style.transform = 'rotate(180deg)';
-                setTimeout(() => document.getElementById('ex-detail-notes').focus(), 50);
-            } else {
-                container.classList.add('hidden');
-                container.classList.remove('slide-up');
-                chevron.style.transform = 'rotate(0deg)';
+        // One tap: the set is done and the rest countdown starts
+        window.toggleSetDone = (idx) => {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if(!ex || !ex.sets || !ex.sets[idx]) return;
+            const set = ex.sets[idx];
+            const nowDone = !isSetDoneToday(set);
+            set.doneOn = nowDone ? getTodayString() : null;
+            syncCompletion(ex);
+            saveToStorage();
+            renderSetsArea();
+            if (nowDone) {
+                if ('vibrate' in navigator) navigator.vibrate(30);
+                startTimerFromSet();
             }
+        };
+
+        // Quick +/- buttons: no on-screen keyboard needed
+        window.stepSet = (idx, field, delta) => {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if(!ex || !ex.sets || !ex.sets[idx]) return;
+            const next = Math.max(0, Math.round(((Number(ex.sets[idx][field]) || 0) + delta) * 100) / 100);
+            ex.sets[idx][field] = next;
+            saveToStorage();
+            renderSetsArea();
+        };
+
+        window.submitDetailQuickLog = (event) => {
+            event.preventDefault();
+            const input = document.getElementById('ex-quicklog-input');
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if(!ex) return;
+            const parsed = parseQuickLog(input.value);
+            if (parsed.sets.length === 0) {
+                showToast('Formato non riconosciuto. Es: 80x8 85x6 oppure 100 8 8 6');
+                return;
+            }
+            applyQuickLog(ex, parsed.sets);
+            saveToStorage();
+            input.value = '';
+            input.blur();
+            renderSetsArea();
+            showToast(`Registrate ${parsed.sets.length} serie`, false);
         };
 
         window.saveExerciseNotes = () => {
             const ex = workouts.find(w => w.id === currentExerciseId);
             if(ex) {
-                const val = document.getElementById('ex-detail-notes').value;
-                ex.notes = val;
+                ex.notes = document.getElementById('ex-detail-notes').value;
                 saveToStorage();
-                const notesBtnLabel = document.getElementById('ex-detail-notes-label');
-                if (val.trim() !== '') {
-                    if (!notesBtnLabel.innerHTML.includes('Vedi/Modifica Note')) {
-                        notesBtnLabel.innerHTML = 'Vedi/Modifica Note <span class="ml-2 w-2 h-2 rounded-full bg-ghisa-accent inline-block shadow-neon-orange shadow-sm"></span>';
-                    }
-                } else {
-                    notesBtnLabel.textContent = 'Aggiungi Note';
-                }
             }
         };
 
@@ -1064,27 +1370,100 @@
                     }
                 }
                 ex.sets.push(newSet);
+                syncCompletion(ex);
                 saveToStorage();
-                renderExerciseDetail();
+                renderSetsArea();
             }
         };
 
         window.removeSet = (idx) => {
             const ex = workouts.find(w => w.id === currentExerciseId);
-            if(ex && ex.sets) { ex.sets.splice(idx, 1); saveToStorage(); renderExerciseDetail(); }
+            if(ex && ex.sets) { ex.sets.splice(idx, 1); syncCompletion(ex); saveToStorage(); renderSetsArea(); }
         };
 
         window.updateSetData = (idx, field, value) => {
             const ex = workouts.find(w => w.id === currentExerciseId);
             if(ex && ex.sets && ex.sets[idx]) {
                 if(['reps', 'weight', 'fatigue', 'distance', 'count'].includes(field)) {
-                     ex.sets[idx][field] = value === '' ? '' : Number(value);
+                     const n = parseFloat(String(value).replace(',', '.'));
+                     ex.sets[idx][field] = value === '' || isNaN(n) ? '' : n;
                 } else {
                      ex.sets[idx][field] = value;
                 }
                 saveToStorage();
             }
         };
+
+        // --- SWAP EXERCISE --- //
+        window.openSwapModal = () => {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if(!ex) return;
+            const exType = ex.type || 'gym';
+
+            // Suggestions: other exercises of the same type, from the plan and the history
+            const names = new Map();
+            const addName = (n) => { const k = String(n || '').trim().toLowerCase(); if (k && !names.has(k)) names.set(k, String(n).trim()); };
+            if (ex.swappedFrom) addName(ex.swappedFrom);
+            workouts.filter(w => (w.type || 'gym') === exType).forEach(w => addName(w.name));
+            const historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
+            Object.values(historyData).forEach(list => (list || []).filter(w => (w.type || 'gym') === exType).forEach(w => addName(w.name)));
+            names.delete(ex.name.trim().toLowerCase());
+
+            const box = document.getElementById('swap-suggestions');
+            box.innerHTML = '';
+            names.forEach(name => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'text-xs font-black uppercase bg-gray-100 text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl active:scale-95 transition-all';
+                chip.textContent = name;
+                chip.addEventListener('click', () => swapExercise(name));
+                box.appendChild(chip);
+            });
+
+            const input = document.getElementById('swap-input');
+            input.value = '';
+            const modal = document.getElementById('modal-swap');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeSwapModal = () => {
+            const modal = document.getElementById('modal-swap');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.submitSwap = (event) => {
+            event.preventDefault();
+            swapExercise(document.getElementById('swap-input').value);
+        };
+
+        // Keeps the work block; remembers the original so it can be restored
+        function swapExercise(newName) {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            newName = String(newName || '').trim();
+            if(!ex || !newName || sameName(newName, ex.name)) { closeSwapModal(); return; }
+
+            if (ex.swappedFrom && sameName(newName, ex.swappedFrom)) {
+                ex.name = ex.swappedFrom;
+                if (ex.swappedSets) ex.sets = ex.swappedSets;
+                delete ex.swappedFrom;
+                delete ex.swappedSets;
+            } else {
+                if (!ex.swappedFrom) {
+                    ex.swappedFrom = ex.name;
+                    ex.swappedSets = (ex.sets || []).map(copySetValues);
+                }
+                ex.name = newName;
+                const last = getLastSession(newName, ex.type || 'gym');
+                if (last) ex.sets = last.sets.map(copySetValues);
+            }
+            syncCompletion(ex);
+            saveToStorage();
+            closeSwapModal();
+            renderExerciseDetail();
+            showToast(`Ora: ${ex.name}`, false);
+        }
 
         let deleteTimeout;
         window.smartDeleteExercise = (btn) => {
@@ -1165,12 +1544,14 @@
                 timerIconContainer.classList.remove('border-gray-700', 'text-ghisa-accent');
                 timerStopBtn.classList.add('bg-red-500', 'text-white');
                 timerStopBtn.classList.remove('bg-gray-700', 'text-gray-300');
+                timerStopBtn.textContent = 'Stop';
             } else {
                 timerDisplay.classList.remove('text-ghisa-neonGreen');
                 timerIconContainer.classList.remove('border-ghisa-neonGreen', 'text-ghisa-neonGreen');
                 timerIconContainer.classList.add('border-gray-700', 'text-ghisa-accent');
                 timerStopBtn.classList.remove('bg-red-500', 'text-white');
                 timerStopBtn.classList.add('bg-gray-700', 'text-gray-300');
+                timerStopBtn.textContent = 'Start';
             }
         }
 
@@ -1252,6 +1633,11 @@
             if (audioCtx && audioCtx.state !== 'running') audioCtx.resume().catch(() => {});
             tickTimer();
         });
+
+        window.toggleTimer = () => {
+            if (timerInterval) stopTimer();
+            else startTimerFromSet();
+        };
 
         // keepScheduledSound: the timer ended on its own, let the pre-scheduled beeps ring
         window.stopTimer = (keepScheduledSound = false) => {
