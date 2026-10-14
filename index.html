@@ -116,6 +116,15 @@
         .type-btn.active[data-type="gym"] { background-color: #111827; color: white; border-color: #2979ff; }
         .type-btn.active[data-type="run"] { background-color: #111827; color: white; border-color: #ff5722; }
         .type-btn.active[data-type="swim"] { background-color: #111827; color: white; border-color: #00bcd4; }
+        .opt-chip { transition: all 0.2s ease; }
+        .opt-chip.active { background-color: #111827; color: white; border-color: #ff5722; }
+
+        /* Extra workout colors */
+        .bg-c8 { background: linear-gradient(135deg, #ff5722, #c41c00); }
+        .bg-c9 { background: linear-gradient(135deg, #00bfa5, #00796b); }
+        .bg-c10 { background: linear-gradient(135deg, #f50057, #a00037); }
+        .bg-c11 { background: linear-gradient(135deg, #651fff, #3d00b3); }
+        .bg-c12 { background: linear-gradient(135deg, #8d6e63, #4e342e); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased pb-40" id="app-body">
@@ -143,53 +152,22 @@
 
         <section id="view-week" class="fade-in pb-10 flex flex-col min-h-full">
             <div class="flex items-center justify-between mb-6 mt-2">
-                <h2 class="text-gray-900 font-black text-2xl uppercase tracking-tight italic">Seleziona Giorno</h2>
+                <h2 class="text-gray-900 font-black text-2xl uppercase tracking-tight italic">Allenamenti</h2>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 flex-grow">
-                <button onclick="openDay('Lunedì', 'bg-lun')" class="bg-lun rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center group relative overflow-hidden border-2 border-transparent hover:border-white">
-                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl font-black italic transform -rotate-12"><i class="fa-solid fa-1"></i></div>
-                    <span class="text-3xl font-black text-white italic tracking-tight z-10">Lunedì</span>
-                    <div class="bg-white text-blue-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-arrow-right text-xl"></i></div>
-                </button>
-                <button onclick="openDay('Martedì', 'bg-mar')" class="bg-mar rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center group relative overflow-hidden border-2 border-transparent hover:border-white">
-                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl font-black italic transform -rotate-12"><i class="fa-solid fa-2"></i></div>
-                    <span class="text-3xl font-black text-white italic tracking-tight z-10">Martedì</span>
-                    <div class="bg-white text-red-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-arrow-right text-xl"></i></div>
-                </button>
-                <button onclick="openDay('Mercoledì', 'bg-mer')" class="bg-mer rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center group relative overflow-hidden border-2 border-transparent hover:border-white">
-                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl font-black italic transform -rotate-12"><i class="fa-solid fa-3"></i></div>
-                    <span class="text-3xl font-black text-white italic tracking-tight z-10">Mercoledì</span>
-                    <div class="bg-white text-orange-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-arrow-right text-xl"></i></div>
-                </button>
-                <button onclick="openDay('Giovedì', 'bg-gio')" class="bg-gio rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center group relative overflow-hidden border-2 border-transparent hover:border-white">
-                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl font-black italic transform -rotate-12"><i class="fa-solid fa-4"></i></div>
-                    <span class="text-3xl font-black text-white italic tracking-tight z-10">Giovedì</span>
-                    <div class="bg-white text-green-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-arrow-right text-xl"></i></div>
-                </button>
-                <button onclick="openDay('Venerdì', 'bg-ven')" class="bg-ven rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center group md:col-span-2 lg:col-span-1 relative overflow-hidden border-2 border-transparent hover:border-white">
-                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl font-black italic transform -rotate-12"><i class="fa-solid fa-5"></i></div>
-                    <span class="text-3xl font-black text-white italic tracking-tight z-10">Venerdì</span>
-                    <div class="bg-white text-purple-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-arrow-right text-xl"></i></div>
-                </button>
-                <button onclick="openDay('Sabato', 'bg-sab')" class="bg-sab rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center group relative overflow-hidden border-2 border-transparent hover:border-white">
-                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl font-black italic transform -rotate-12"><i class="fa-solid fa-6"></i></div>
-                    <span class="text-3xl font-black text-white italic tracking-tight z-10">Sabato</span>
-                    <div class="bg-white text-cyan-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-arrow-right text-xl"></i></div>
-                </button>
-                <button onclick="openDay('Domenica', 'bg-dom')" class="bg-dom rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center group md:col-span-2 relative overflow-hidden border-2 border-transparent hover:border-white">
-                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl font-black italic transform -rotate-12"><i class="fa-solid fa-7"></i></div>
-                    <span class="text-3xl font-black text-white italic tracking-tight z-10">Domenica</span>
-                    <div class="bg-white text-slate-800 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-solid fa-arrow-right text-xl"></i></div>
-                </button>
-            </div>
+            <!-- Workout cards: populated via JS -->
+            <div id="workout-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+
+            <button onclick="createWorkoutDay()" class="mt-5 w-full py-5 rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 text-gray-500 hover:text-gray-900 hover:border-gray-900 font-black italic uppercase flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+                <i class="fa-solid fa-plus text-ghisa-accent"></i> Nuovo Allenamento
+            </button>
 
             <!-- Signature Footer -->
             <div class="mt-12 mb-4 text-center">
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-xs opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.1</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.2</span>
             </div>
         </section>
 
@@ -246,15 +224,18 @@
                 <button onclick="closeDay()" class="bg-gray-900 text-white shadow-lg w-14 h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95 border-2 border-gray-900">
                     <i class="fa-solid fa-arrow-left text-xl"></i>
                 </button>
-                <div id="day-header" class="flex-grow rounded-2xl py-3 px-6 shadow-sport flex justify-between items-center border-2 border-white">
-                    <h2 id="day-title" class="text-3xl font-black italic text-white uppercase tracking-tighter">Giorno</h2>
+                <div id="day-header" class="flex-grow min-w-0 rounded-2xl py-3 px-6 shadow-sport flex justify-between items-center gap-2 border-2 border-white">
+                    <h2 id="day-title" class="text-3xl font-black italic text-white uppercase tracking-tighter truncate">Allenamento</h2>
+                    <button onclick="openWorkoutSettings()" title="Imposta allenamento" class="shrink-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center active:scale-95 transition-all">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- RESET CHECKMARKS BUTTON -->
             <button onclick="resetDayCheckmarks()" class="w-full mb-6 bg-gray-900 text-white font-black italic uppercase text-sm py-4 rounded-2xl flex items-center justify-center gap-3 shadow-sport active:scale-[0.98] transition-all border-b-4 border-ghisa-accent">
                 <i class="fa-solid fa-rotate-right text-ghisa-accent text-lg"></i>
-                <span>Inizia Nuova Settimana (Resetta Spunte)</span>
+                <span>Nuova Sessione (Resetta Spunte)</span>
             </button>
 
             <!-- Add New Exercise with Type Selector -->
@@ -271,6 +252,16 @@
                     </button>
                 </div>
 
+                <!-- Gym options for the new exercise -->
+                <div id="gym-options" class="flex gap-2 mb-3">
+                    <button type="button" onclick="toggleNewExOption('time')" data-opt="time" class="opt-chip flex-1 py-2 rounded-lg text-xs font-black uppercase border-2 border-gray-200 text-gray-500 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-hourglass-half"></i> A tempo
+                    </button>
+                    <button type="button" onclick="toggleNewExOption('perSide')" data-opt="perSide" class="opt-chip flex-1 py-2 rounded-lg text-xs font-black uppercase border-2 border-gray-200 text-gray-500 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-scale-balanced"></i> Peso per lato
+                    </button>
+                </div>
+
                 <form id="add-exercise-form" class="flex gap-3">
                     <input type="text" id="new-exercise-name" placeholder="ES. PANCA 80x8 85x6" required autocomplete="off"
                         class="flex-grow min-w-0 bg-gray-100 border-2 border-transparent rounded-xl px-5 py-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-ghisa-accent transition-all font-bold uppercase">
@@ -279,7 +270,7 @@
                     </button>
                 </form>
                 <p id="quicklog-hint" class="text-[11px] text-gray-400 font-medium mt-2 px-1">
-                    <i class="fa-solid fa-bolt text-ghisa-accent"></i> Quick log: <b>panca 80x8 85x6</b> o <b>squat 100 8 8 6</b> registra le serie già fatte.
+                    <i class="fa-solid fa-bolt text-ghisa-accent"></i> Quick log: <b>panca 80x8 85x6</b>, <b>squat 100 8 8 6</b> o <b>plank 25kg 30s 30s</b> registra le serie già fatte.
                 </p>
             </div>
 
@@ -314,6 +305,12 @@
             <div class="flex flex-wrap items-center gap-2 mb-4 -mt-2">
                 <button onclick="openSwapModal()" class="text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition-all">
                     <i class="fa-solid fa-right-left text-ghisa-accent"></i> Sostituisci
+                </button>
+                <button id="ex-opt-time" onclick="toggleExerciseOption('time')" class="ex-opt opt-chip text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-hourglass-half"></i> A tempo
+                </button>
+                <button id="ex-opt-perside" onclick="toggleExerciseOption('perSide')" class="ex-opt opt-chip text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-scale-balanced"></i> Per lato
                 </button>
                 <div id="ex-detail-swapped" class="hidden"></div>
             </div>
@@ -451,7 +448,44 @@
         </div>
     </div>
 
-    <div id="modal-swap" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
+    <div id="modal-workout" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-sport flex flex-col max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                <h3 id="workout-modal-title" class="text-2xl font-black italic uppercase text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-ghisa-accent"></i> Imposta
+                </h3>
+                <button onclick="closeWorkoutSettings()" class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveWorkoutSettings(event)">
+                <label for="workout-name-input" class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Nome</label>
+                <input type="text" id="workout-name-input" required maxlength="40" autocomplete="off" placeholder="ES. PUSH, GAMBE, ALLENAMENTO A"
+                    class="w-full mb-5 bg-gray-100 border-2 border-transparent rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 font-bold uppercase focus:outline-none focus:border-ghisa-accent transition-all">
+
+                <span class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Colore</span>
+                <div id="workout-color-picker" class="grid grid-cols-6 gap-2 mb-5"></div>
+
+                <div id="workout-order-row" class="flex gap-2 mb-5">
+                    <button type="button" onclick="moveWorkoutDay(-1)" class="flex-1 bg-gray-100 text-gray-700 border-2 border-gray-200 py-3 rounded-xl font-black uppercase text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                        <i class="fa-solid fa-arrow-up"></i> Sposta su
+                    </button>
+                    <button type="button" onclick="moveWorkoutDay(1)" class="flex-1 bg-gray-100 text-gray-700 border-2 border-gray-200 py-3 rounded-xl font-black uppercase text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+                        <i class="fa-solid fa-arrow-down"></i> Sposta giù
+                    </button>
+                </div>
+
+                <button type="submit" class="w-full bg-ghisa-accent hover:bg-ghisa-accentHover text-white py-4 rounded-xl font-black uppercase text-sm shadow-neon-orange active:scale-95 transition-all">Salva</button>
+            </form>
+
+            <button id="btn-delete-workout" onclick="deleteWorkoutDay(this)" data-confirm="false" class="w-full mt-3 py-3 text-gray-500 font-black uppercase text-xs tracking-widest bg-gray-100 rounded-xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 transition-all active:scale-95">
+                <i class="fa-solid fa-trash-can mr-2"></i> Elimina Allenamento
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-swap"class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-sport flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
                 <h3 class="text-2xl font-black italic uppercase text-gray-900 flex items-center gap-2">
@@ -480,13 +514,50 @@
     <script>
         const STORAGE_KEY = 'ghisa_workouts_v6';
         const HISTORY_KEY = 'ghisa_history_v1';
+        const DAYS_KEY = 'ghisa_days_v1';
         let workouts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
+        // Workouts ("Allenamento 1", "Push"...) the user creates: [{ id, name, color }].
+        // Each exercise points to its workout with dayId.
+        const COLOR_CLASSES = ['bg-lun', 'bg-mar', 'bg-mer', 'bg-gio', 'bg-ven', 'bg-sab', 'bg-dom', 'bg-c8', 'bg-c9', 'bg-c10', 'bg-c11', 'bg-c12'];
+        const WEEKDAY_ORDER = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+
+        // Older versions grouped exercises by weekday (dayOfWeek): each weekday in use
+        // becomes a workout with the same name and color. Returns the full list of workouts.
+        function migrateToWorkoutDays(list, existingDays) {
+            const days = Array.isArray(existingDays) ? existingDays.slice() : [];
+            const orphans = list.filter(ex => !days.some(d => d.id === ex.dayId));
+            const names = [...new Set(orphans.map(ex => ex.dayOfWeek || 'Allenamento 1'))].sort((a, b) => {
+                const ia = WEEKDAY_ORDER.indexOf(a), ib = WEEKDAY_ORDER.indexOf(b);
+                return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+            });
+            names.forEach(name => {
+                if (days.some(d => d.name === name)) return;
+                const weekdayIdx = WEEKDAY_ORDER.indexOf(name);
+                days.push({ id: generateId(), name, color: weekdayIdx >= 0 ? COLOR_CLASSES[weekdayIdx] : COLOR_CLASSES[days.length % COLOR_CLASSES.length] });
+            });
+            orphans.forEach(ex => { ex.dayId = days.find(d => d.name === (ex.dayOfWeek || 'Allenamento 1')).id; });
+            return days;
+        }
+
+        let workoutDays = migrateToWorkoutDays(workouts, JSON.parse(localStorage.getItem(DAYS_KEY)));
+        if (workoutDays.length === 0) workoutDays = [{ id: generateId(), name: 'Allenamento 1', color: COLOR_CLASSES[0] }];
+        localStorage.setItem(DAYS_KEY, JSON.stringify(workoutDays));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(workouts));
+
+        function saveDays() {
+            return safeSetItem(DAYS_KEY, JSON.stringify(workoutDays));
+        }
+
+        function getDay(id) {
+            return workoutDays.find(d => d.id === id) || null;
+        }
+
         // State variables
-        let currentDay = null;
-        let currentDayColor = '';
+        let currentDay = null; // id of the open workout
         let currentExerciseId = null;
         let selectedActivityType = 'gym';
+        let newExOptions = { time: false, perSide: false };
 
         // Timer Variables
         const TIMER_STORAGE_KEY = 'ghisa_default_timer';
@@ -569,10 +640,14 @@
                 .filter(w => (w.completed && w.completedOn === today) || (w.sets || []).some(isSetDoneToday))
                 .map(w => {
                     const todaySets = (w.sets || []).filter(isSetDoneToday);
-                    return { ...w, sets: todaySets.length > 0 ? todaySets : (w.sets || []) };
+                    const day = getDay(w.dayId);
+                    return { ...w, dayName: day ? day.name : '', sets: todaySets.length > 0 ? todaySets : (w.sets || []) };
                 });
-            if (doneToday.length > 0) {
-                historyData[today] = stripImages(doneToday);
+            // Exercises deleted from the plan after being done today stay in today's history
+            const deletedButDone = (historyData[today] || []).filter(h => !workouts.some(w => w.id === h.id));
+            const entries = deletedButDone.concat(stripImages(doneToday));
+            if (entries.length > 0) {
+                historyData[today] = entries;
             } else {
                 delete historyData[today];
             }
@@ -621,14 +696,16 @@
         }
 
         // Most recent session before today for an exercise with this name (by name, so it
-        // also works after a swap). Returns { date, sets, notes } or null.
+        // also works after a swap). Returns { date, sets, notes, mode, perSide } or null.
         function getLastSession(name, type) {
             const today = getTodayString();
             const historyData = JSON.parse(localStorage.getItem(HISTORY_KEY)) || {};
             const dates = Object.keys(historyData).filter(d => d < today).sort().reverse();
             for (const date of dates) {
                 const entry = (historyData[date] || []).find(ex => sameName(ex.name, name) && (ex.type || 'gym') === type);
-                if (entry && (entry.sets || []).length > 0) return { date, sets: entry.sets, notes: entry.notes || '' };
+                if (entry && (entry.sets || []).length > 0) {
+                    return { date, sets: entry.sets, notes: entry.notes || '', mode: entry.mode || 'reps', perSide: !!entry.perSide };
+                }
             }
             return null;
         }
@@ -646,11 +723,63 @@
             return new Date(dateStr + 'T00:00:00').toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' });
         }
 
+        // Gym exercises are either reps-based (default) or time-based (plank, tapis roulant)
+        function isTimed(ex) {
+            return (ex.type || 'gym') === 'gym' && ex.mode === 'time';
+        }
+
+        function weightUnit(ex) {
+            return ex.perSide ? 'kg/lato' : 'kg';
+        }
+
+        // Durations are stored in seconds: 30 → "30s", 90 → "1:30", 1800 → "30:00", 3600 → "1:00:00"
+        function formatDuration(sec) {
+            if (sec === '' || sec === null || sec === undefined || isNaN(Number(sec))) return '';
+            sec = Math.round(Number(sec));
+            if (sec < 60) return `${sec}s`;
+            const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+            const mmss = `${h > 0 ? String(m).padStart(2, '0') : m}:${String(s).padStart(2, '0')}`;
+            return h > 0 ? `${h}:${mmss}` : mmss;
+        }
+
+        // "30s", "30 sec", "30m", "30min", "1h", "1:30", "1:00:00"; a bare number is seconds
+        function parseDuration(text) {
+            const t = String(text || '').trim().toLowerCase().replace(',', '.');
+            if (t === '') return '';
+            let m;
+            if ((m = t.match(/^(\d+):(\d{1,2})(?::(\d{1,2}))?$/))) {
+                return m[3] !== undefined
+                    ? parseInt(m[1]) * 3600 + parseInt(m[2]) * 60 + parseInt(m[3])
+                    : parseInt(m[1]) * 60 + parseInt(m[2]);
+            }
+            if ((m = t.match(/^(\d+(?:\.\d+)?)\s*(s|sec|secondi|m|min|minuti|h|ore)?$/))) {
+                const v = parseFloat(m[1]);
+                const unit = m[2] || 's';
+                if (unit.startsWith('h') || unit === 'ore') return Math.round(v * 3600);
+                if (unit.startsWith('m')) return Math.round(v * 60);
+                return Math.round(v);
+            }
+            return '';
+        }
+
+        // +/- step that makes sense for the current length: plank seconds, tapis roulant minutes
+        function durationStep(sec) {
+            sec = Number(sec) || 0;
+            if (sec < 120) return 5;
+            if (sec < 600) return 15;
+            return 60;
+        }
+
+        function formatStep(sec) {
+            return sec < 60 ? `${sec}s` : `${sec / 60}m`;
+        }
+
         // --- QUICK LOG PARSER --- //
-        // "panca 80x8 85x6"  → name "panca", sets 80kg×8, 85kg×6
-        // "squat 100 8 8 6"  → first bare number is the load, the next ones are reps
-        // "80x8x3"           → 3 sets of 80kg×8;  "@8" after a set → RPE 8
-        // "100kg 8 8"        → load in kg, then reps;  words after the numbers → note of the last set
+        // "panca 80x8 85x6"   → name "panca", sets 80kg×8, 85kg×6
+        // "squat 100 8 8 6"   → first bare number is the load, the next ones are reps
+        // "80x8x3"            → 3 sets of 80kg×8;  "@8" after a set → RPE 8
+        // "100kg 8 8"         → load in kg, then reps;  words after the numbers → note of the last set
+        // "plank 25kg 30s 45s"→ time sets with 25kg; "tapis 30m"; "25x30s"
         function parseQuickLog(text) {
             const tokens = text.trim().split(/[\s;]+/).filter(Boolean);
             const nameParts = [];
@@ -660,7 +789,10 @@
             let started = false;
             const num = (s) => parseFloat(s.replace(',', '.'));
             const N = '(\\d+(?:[.,]\\d+)?)';
+            const DUR = '(\\d+(?:[.,]\\d+)?(?:s|sec|m|min|h)|\\d+:\\d{2}(?::\\d{2})?)';
             const reWxR = new RegExp(`^${N}(?:kg)?[x×*](\\d+)(?:[x×*](\\d+))?(?:@${N})?$`);
+            const reWxDur = new RegExp(`^${N}(?:kg)?[x×*]${DUR}(?:@${N})?$`);
+            const reDur = new RegExp(`^${DUR}(?:@${N})?$`);
             const reKg = new RegExp(`^${N}kg$`);
             const reRpe = new RegExp(`^@${N}$`);
             const reBare = new RegExp(`^${N}(?:@${N})?$`);
@@ -674,6 +806,13 @@
                     for (let i = 0; i < times; i++) {
                         sets.push({ weight, reps: parseInt(m[2]), fatigue: m[4] ? num(m[4]) : '' });
                     }
+                    started = true;
+                } else if ((m = t.match(reWxDur))) {
+                    weight = num(m[1]);
+                    sets.push({ weight, duration: parseDuration(m[2]), fatigue: m[3] ? num(m[3]) : '' });
+                    started = true;
+                } else if ((m = t.match(reDur))) {
+                    sets.push({ weight: weight === null ? '' : weight, duration: parseDuration(m[1]), fatigue: m[2] ? num(m[2]) : '' });
                     started = true;
                 } else if ((m = t.match(reKg))) {
                     weight = num(m[1]);
@@ -695,13 +834,19 @@
             }
 
             if (noteParts.length > 0 && sets.length > 0) sets[sets.length - 1].note = noteParts.join(' ');
-            return { name: nameParts.join(' '), sets, weight, hasNumbers: started };
+            const timed = sets.length > 0 && sets.every(s => s.duration !== undefined);
+            return { name: nameParts.join(' '), sets, weight, hasNumbers: started, timed };
         }
 
-        // Logged sets replace the exercise's sets and count as done today
+        // Logged sets replace the exercise's sets and count as done today;
+        // time sets ("30s") turn the exercise into a time-based one, and vice versa
         function applyQuickLog(ex, parsedSets) {
             const today = getTodayString();
-            ex.sets = parsedSets.map(s => ({ reps: s.reps, weight: s.weight, fatigue: s.fatigue, note: s.note || '', doneOn: today }));
+            const timed = parsedSets.every(s => s.duration !== undefined);
+            ex.mode = timed ? 'time' : 'reps';
+            ex.sets = parsedSets.map(s => timed
+                ? { duration: s.duration, weight: s.weight, fatigue: s.fatigue, note: s.note || '', doneOn: today }
+                : { reps: s.reps ?? '', weight: s.weight, fatigue: s.fatigue, note: s.note || '', doneOn: today });
             syncCompletion(ex);
         }
 
@@ -753,7 +898,10 @@
         };
 
         // Read-only detail of the sets saved in a history entry
-        function renderHistorySets(exType, sets) {
+        function renderHistorySets(ex) {
+            const exType = ex.type || 'gym';
+            const sets = ex.sets || [];
+            const timed = isTimed(ex);
             if (sets.length === 0) return '';
             const show = (v) => (v === '' || v === null || v === undefined) ? '–' : escapeHtml(v);
 
@@ -761,8 +909,8 @@
                 const rows = sets.map((s, idx) => `
                     <div class="grid grid-cols-4 text-center py-1.5 ${idx > 0 ? 'border-t border-gray-100' : ''}">
                         <span class="font-black italic text-gray-300">${idx + 1}</span>
-                        <span class="font-black text-gray-900">${show(s.reps)}</span>
-                        <span class="font-black text-gray-900">${show(s.weight)}</span>
+                        <span class="font-black text-gray-900">${timed ? show(formatDuration(s.duration)) : show(s.reps)}</span>
+                        <span class="font-black text-gray-900">${show(s.weight === '' || s.weight === undefined ? '' : formatWeight(s.weight))}</span>
                         <span class="font-black text-ghisa-accent">${show(s.fatigue)}</span>
                         ${s.note ? `<span class="col-span-4 text-[11px] text-gray-500 italic pt-0.5">${escapeHtml(s.note)}</span>` : ''}
                     </div>
@@ -770,7 +918,7 @@
                 return `
                     <div class="mt-3 bg-white rounded-lg border border-gray-100 px-2 py-1 text-sm">
                         <div class="grid grid-cols-4 text-center text-[9px] font-black text-gray-400 uppercase tracking-widest py-1">
-                            <span>Set</span><span>Reps</span><span>Kg</span><span class="text-ghisa-accent">RPE</span>
+                            <span>Set</span><span>${timed ? 'Tempo' : 'Reps'}</span><span>${weightUnit(ex)}</span><span class="text-ghisa-accent">RPE</span>
                         </div>
                         ${rows}
                     </div>
@@ -833,25 +981,48 @@
                         <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 border border-gray-200 text-gray-400 text-sm">${typeIcon}</div>
                         <div class="flex-grow overflow-hidden py-1">
                             <h4 class="font-black italic text-sm uppercase text-gray-700 truncate">${escapeHtml(ex.name)}</h4>
-                            <p class="text-[10px] mt-1 font-bold uppercase tracking-wider text-gray-400">${subText} - ${escapeHtml(ex.dayOfWeek)}</p>
+                            <p class="text-[10px] mt-1 font-bold uppercase tracking-wider text-gray-400">${subText} - ${escapeHtml(ex.dayName || ex.dayOfWeek || '')}</p>
                         </div>
                         <div class="shrink-0 ${ex.completed ? 'text-ghisa-neonGreen' : 'text-gray-300'}">
                             <i class="fa-solid ${ex.completed ? 'fa-check-circle' : 'fa-circle-half-stroke'} text-xl"></i>
                         </div>
                     </div>
-                    ${renderHistorySets(exType, sets)}
+                    ${renderHistorySets(ex)}
                     ${ex.notes && ex.notes.trim() !== '' ? `<p class="mt-3 text-xs text-gray-600 bg-white rounded-lg border border-gray-100 p-2 whitespace-pre-line"><i class="fa-solid fa-pen text-ghisa-accent mr-1"></i>${escapeHtml(ex.notes)}</p>` : ''}
                 `;
                 container.appendChild(card);
             });
         };
 
-        window.openDay = (dayName, colorClass) => {
-            currentDay = dayName;
-            currentDayColor = colorClass;
+        // --- WORKOUTS (home) --- //
+        function renderWorkoutList() {
+            const list = document.getElementById('workout-list');
+            list.innerHTML = '';
+            workoutDays.forEach((day, index) => {
+                const exercises = workouts.filter(w => w.dayId === day.id);
+                const doneToday = exercises.filter(isExerciseDoneToday).length;
+                const card = document.createElement('button');
+                card.className = `${day.color} rounded-2xl p-6 shadow-sport hover:scale-[1.02] transform transition active:scale-[0.98] text-left flex justify-between items-center gap-3 relative overflow-hidden border-2 border-transparent hover:border-white`;
+                card.innerHTML = `
+                    <div class="absolute -right-4 -top-8 text-white/10 text-9xl font-black italic transform -rotate-12 select-none">${index + 1}</div>
+                    <div class="z-10 min-w-0">
+                        <span class="block text-2xl sm:text-3xl font-black text-white italic tracking-tight uppercase break-words leading-tight">${escapeHtml(day.name)}</span>
+                        <span class="block text-xs font-black uppercase tracking-widest text-white/80 mt-1">
+                            ${exercises.length} ${exercises.length === 1 ? 'esercizio' : 'esercizi'}${doneToday > 0 ? ` · <i class="fa-solid fa-check"></i> ${doneToday} fatti oggi` : ''}
+                        </span>
+                    </div>
+                    <div class="bg-white text-gray-900 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 shrink-0"><i class="fa-solid fa-arrow-right text-xl"></i></div>
+                `;
+                card.addEventListener('click', () => openDay(day.id));
+                list.appendChild(card);
+            });
+        }
 
-            document.getElementById('day-title').textContent = dayName;
-            document.getElementById('day-header').className = `flex-grow rounded-2xl py-4 px-6 shadow-sport flex justify-between items-center text-white border-2 border-white/20 ${colorClass}`;
+        window.openDay = (dayId) => {
+            const day = getDay(dayId);
+            if (!day) return;
+            currentDay = dayId;
+            renderDayHeader();
 
             viewWeek.classList.add('hidden');
             viewDay.classList.remove('hidden');
@@ -860,10 +1031,135 @@
             renderDayList();
         };
 
+        function renderDayHeader() {
+            const day = getDay(currentDay);
+            if (!day) return;
+            document.getElementById('day-title').textContent = day.name;
+            document.getElementById('day-header').className = `flex-grow min-w-0 rounded-2xl py-4 px-6 shadow-sport flex justify-between items-center gap-2 text-white border-2 border-white/20 ${day.color}`;
+        }
+
         window.closeDay = () => {
             currentDay = null;
             viewDay.classList.add('hidden');
             viewWeek.classList.remove('hidden');
+            renderWorkoutList();
+        };
+
+        // --- WORKOUT SETTINGS: create, rename, color, order, delete --- //
+        let editingDay = null;   // copy being edited
+        let creatingDay = false;
+
+        function renderColorPicker() {
+            const picker = document.getElementById('workout-color-picker');
+            picker.innerHTML = '';
+            COLOR_CLASSES.forEach(color => {
+                const swatch = document.createElement('button');
+                swatch.type = 'button';
+                swatch.title = 'Colore';
+                const selected = editingDay.color === color;
+                swatch.className = `${color} h-11 rounded-xl transition-all active:scale-90 ${selected ? 'ring-4 ring-gray-900 ring-offset-2' : ''}`;
+                swatch.innerHTML = selected ? '<i class="fa-solid fa-check text-white"></i>' : '';
+                swatch.addEventListener('click', () => { editingDay.color = color; renderColorPicker(); });
+                picker.appendChild(swatch);
+            });
+        }
+
+        function showWorkoutModal() {
+            document.getElementById('workout-name-input').value = editingDay.name;
+            document.getElementById('workout-modal-title').innerHTML = creatingDay
+                ? '<i class="fa-solid fa-plus text-ghisa-accent"></i> Nuovo'
+                : '<i class="fa-solid fa-gear text-ghisa-accent"></i> Imposta';
+            document.getElementById('workout-order-row').classList.toggle('hidden', creatingDay || workoutDays.length < 2);
+            const delBtn = document.getElementById('btn-delete-workout');
+            delBtn.classList.toggle('hidden', creatingDay);
+            resetDeleteWorkoutButton(delBtn);
+            renderColorPicker();
+
+            const modal = document.getElementById('modal-workout');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        window.createWorkoutDay = () => {
+            // First free "Allenamento N"
+            let n = workoutDays.length + 1;
+            while (workoutDays.some(d => sameName(d.name, `Allenamento ${n}`))) n++;
+            editingDay = { id: generateId(), name: `Allenamento ${n}`, color: COLOR_CLASSES[workoutDays.length % COLOR_CLASSES.length] };
+            creatingDay = true;
+            showWorkoutModal();
+        };
+
+        window.openWorkoutSettings = () => {
+            const day = getDay(currentDay);
+            if (!day) return;
+            editingDay = { ...day };
+            creatingDay = false;
+            showWorkoutModal();
+        };
+
+        window.closeWorkoutSettings = () => {
+            const modal = document.getElementById('modal-workout');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.saveWorkoutSettings = (event) => {
+            event.preventDefault();
+            const name = document.getElementById('workout-name-input').value.trim();
+            if (!name) return;
+            editingDay.name = name;
+
+            if (creatingDay) {
+                workoutDays.push(editingDay);
+                saveDays();
+                closeWorkoutSettings();
+                openDay(editingDay.id);
+            } else {
+                const day = getDay(editingDay.id);
+                if (day) { day.name = editingDay.name; day.color = editingDay.color; }
+                saveDays();
+                closeWorkoutSettings();
+                renderDayHeader();
+            }
+        };
+
+        window.moveWorkoutDay = (direction) => {
+            const idx = workoutDays.findIndex(d => d.id === editingDay.id);
+            const target = idx + direction;
+            if (idx < 0 || target < 0 || target >= workoutDays.length) return;
+            [workoutDays[idx], workoutDays[target]] = [workoutDays[target], workoutDays[idx]];
+            saveDays();
+            renderWorkoutList();
+            showToast(`Posizione ${target + 1} di ${workoutDays.length}`, false);
+        };
+
+        function resetDeleteWorkoutButton(btn) {
+            btn.dataset.confirm = 'false';
+            btn.innerHTML = '<i class="fa-solid fa-trash-can mr-2"></i> Elimina Allenamento';
+            btn.classList.remove('bg-red-600', 'text-white');
+            btn.classList.add('bg-gray-100', 'text-gray-500');
+        }
+
+        let deleteWorkoutTimeout;
+        window.deleteWorkoutDay = (btn) => {
+            if (btn.dataset.confirm !== 'true') {
+                const count = workouts.filter(w => w.dayId === editingDay.id).length;
+                btn.dataset.confirm = 'true';
+                btn.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i> Elimina anche ${count} ${count === 1 ? 'esercizio' : 'esercizi'}? Tocca di nuovo`;
+                btn.classList.add('bg-red-600', 'text-white');
+                btn.classList.remove('bg-gray-100', 'text-gray-500');
+                clearTimeout(deleteWorkoutTimeout);
+                deleteWorkoutTimeout = setTimeout(() => resetDeleteWorkoutButton(btn), 3000);
+                return;
+            }
+            clearTimeout(deleteWorkoutTimeout);
+            // The history keeps what was done: only the plan is removed
+            workouts = workouts.filter(w => w.dayId !== editingDay.id);
+            workoutDays = workoutDays.filter(d => d.id !== editingDay.id);
+            saveDays();
+            saveToStorage();
+            closeWorkoutSettings();
+            closeDay();
         };
 
         window.selectType = (type) => {
@@ -877,15 +1173,28 @@
             });
             const input = document.getElementById('new-exercise-name');
             document.getElementById('quicklog-hint').classList.toggle('hidden', type !== 'gym');
-            if(type === 'gym') input.placeholder = "ES. PANCA 80x8 85x6";
+            document.getElementById('gym-options').classList.toggle('hidden', type !== 'gym');
+            if(type === 'gym') updateNewExPlaceholder();
             if(type === 'run') input.placeholder = "ES. FARTLEK 5KM";
             if(type === 'swim') input.placeholder = "ES. STILE LIBERO";
+        };
+
+        function updateNewExPlaceholder() {
+            document.getElementById('new-exercise-name').placeholder = newExOptions.time
+                ? 'ES. PLANK 25kg 30s'
+                : (newExOptions.perSide ? 'ES. CURL MANUBRI 14x10' : 'ES. PANCA 80x8 85x6');
+        }
+
+        window.toggleNewExOption = (opt) => {
+            newExOptions[opt] = !newExOptions[opt];
+            document.querySelector(`#gym-options [data-opt="${opt}"]`).classList.toggle('active', newExOptions[opt]);
+            updateNewExPlaceholder();
         };
 
         window.resetDayCheckmarks = () => {
             let hasCompleted = false;
             workouts.forEach(w => {
-                if(w.dayOfWeek === currentDay && (w.completed || (w.sets || []).some(isSetDoneToday))) {
+                if(w.dayId === currentDay && (w.completed || (w.sets || []).some(isSetDoneToday))) {
                     markExerciseDone(w, false);
                     hasCompleted = true;
                 }
@@ -907,10 +1216,25 @@
             }
         };
 
+        // Short summary of the best set for the exercise cards
+        function bestSetSummary(ex) {
+            const sets = ex.sets || [];
+            if (sets.length === 0) return '';
+            const maxW = Math.max(...sets.map(s => Number(s.weight) || 0));
+            if (isTimed(ex)) {
+                const maxD = Math.max(...sets.map(s => Number(s.duration) || 0));
+                const parts = [];
+                if (maxD > 0) parts.push(formatDuration(maxD));
+                if (maxW > 0) parts.push(`${formatWeight(maxW)}${weightUnit(ex)}`);
+                return parts.join(' · ');
+            }
+            return maxW > 0 ? `MAX ${formatWeight(maxW)}${weightUnit(ex)}` : '';
+        }
+
         function renderDayList() {
             const list = document.getElementById('day-exercise-list');
             const empty = document.getElementById('day-empty-state');
-            const dayWorkouts = workouts.filter(w => w.dayOfWeek === currentDay);
+            const dayWorkouts = workouts.filter(w => w.dayId === currentDay);
 
             if (dayWorkouts.length === 0) {
                 list.innerHTML = '';
@@ -926,7 +1250,7 @@
             dayWorkouts.forEach((ex, index) => {
                 const exType = ex.type || 'gym';
                 let typeColorClass = 'border-l-ghisa-neonBlue';
-                let typeIcon = '<i class="fa-solid fa-dumbbell"></i>';
+                let typeIcon = isTimed(ex) ? '<i class="fa-solid fa-hourglass-half"></i>' : '<i class="fa-solid fa-dumbbell"></i>';
 
                 if(exType === 'run') { typeColorClass = 'border-l-yellow-400'; typeIcon = '<i class="fa-solid fa-person-running"></i>'; }
                 if(exType === 'swim') { typeColorClass = 'border-l-cyan-400'; typeIcon = '<i class="fa-solid fa-person-swimming"></i>'; }
@@ -948,9 +1272,9 @@
                     subText = doneCount > 0 && !isExerciseDoneToday(ex)
                         ? `<span class="font-black text-green-600">${doneCount}/${setsCount} SERIE</span>`
                         : `<span class="font-bold text-gray-700">${setsCount} SERIE</span>`;
-                    const maxW = setsCount > 0 ? Math.max(...ex.sets.map(s => Number(s.weight) || 0)) : 0;
-                    if(maxW > 0) {
-                        subText += ` <span class="text-gray-400 mx-1">|</span> <span class="font-black text-gray-900">MAX ${maxW}kg</span>`;
+                    const best = bestSetSummary(ex);
+                    if(best) {
+                        subText += ` <span class="text-gray-400 mx-1">|</span> <span class="font-black text-gray-900 normal-case">${escapeHtml(best)}</span>`;
                     }
                 } else {
                     subText = `<span class="font-bold text-gray-700">${setsCount} RIPETUTE</span>`;
@@ -971,14 +1295,19 @@
             });
         }
 
+        function emptyGymSet(timed) {
+            return timed ? { duration: '', weight: '', fatigue: '' } : { reps: '', weight: '', fatigue: '' };
+        }
+
         document.getElementById('add-exercise-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const input = document.getElementById('new-exercise-name');
             const text = input.value.trim();
             if(!text || !currentDay) return;
 
-            // Gym: the text may be a quick log ("panca 80x8 85x6")
-            const parsed = selectedActivityType === 'gym' ? parseQuickLog(text) : { name: text, sets: [], weight: null, hasNumbers: false };
+            // Gym: the text may be a quick log ("panca 80x8 85x6", "plank 25kg 30s")
+            const isGym = selectedActivityType === 'gym';
+            const parsed = isGym ? parseQuickLog(text) : { name: text, sets: [], weight: null, hasNumbers: false, timed: false };
             const name = parsed.name.trim();
             if (!name) {
                 showToast('Scrivi prima il nome dell\'esercizio, poi i numeri. Es: panca 80x8 85x6');
@@ -986,8 +1315,8 @@
             }
 
             if (parsed.sets.length > 0) {
-                // Logging an exercise already in today's plan: exact name, or the only one starting with it
-                const dayGym = workouts.filter(w => w.dayOfWeek === currentDay && (w.type || 'gym') === 'gym');
+                // Logging an exercise already in this workout: exact name, or the only one starting with it
+                const dayGym = workouts.filter(w => w.dayId === currentDay && (w.type || 'gym') === 'gym');
                 const lower = name.toLowerCase();
                 const prefixMatches = dayGym.filter(w => w.name.trim().toLowerCase().startsWith(lower));
                 const existing = dayGym.find(w => sameName(w.name, name)) || (prefixMatches.length === 1 ? prefixMatches[0] : null);
@@ -1002,21 +1331,27 @@
                 }
             }
 
+            // Options: chosen on the chips, otherwise the ones used last time for this exercise
+            const last = isGym ? getLastSession(name, 'gym') : null;
+            const timed = newExOptions.time || parsed.timed || (!parsed.hasNumbers && !!last && last.mode === 'time');
+            const perSide = newExOptions.perSide || (!!last && last.perSide);
+
             let sets;
-            if (selectedActivityType !== 'gym') {
+            if (!isGym) {
                 sets = [{ distance: '', count: '', time: '', rest: '' }];
             } else if (parsed.weight !== null && parsed.sets.length === 0) {
                 // "panca 80": just the planned load
-                sets = [{ reps: '', weight: parsed.weight, fatigue: '' }];
-            } else {
+                sets = [{ ...emptyGymSet(timed), weight: parsed.weight }];
+            } else if (last && (last.mode === 'time') === timed) {
                 // Pre-fill from the last time an exercise with this name was done
-                const last = getLastSession(name, 'gym');
-                sets = last ? last.sets.map(copySetValues) : [{ reps: '', weight: '', fatigue: '' }];
+                sets = last.sets.map(copySetValues);
+            } else {
+                sets = [emptyGymSet(timed)];
             }
 
             const ex = {
                 id: generateId(),
-                dayOfWeek: currentDay,
+                dayId: currentDay,
                 type: selectedActivityType,
                 name: name,
                 completed: false,
@@ -1024,6 +1359,10 @@
                 sets: sets,
                 createdAt: Date.now()
             };
+            if (isGym) {
+                ex.mode = timed ? 'time' : 'reps';
+                ex.perSide = perSide;
+            }
             if (parsed.sets.length > 0) applyQuickLog(ex, parsed.sets);
             workouts.push(ex);
 
@@ -1106,6 +1445,14 @@
             document.getElementById('ex-detail-notes').value = ex.notes || '';
             document.getElementById('ex-quicklog-form').classList.toggle('hidden', exType !== 'gym');
             document.getElementById('ex-quicklog-form').classList.toggle('flex', exType === 'gym');
+            document.getElementById('ex-quicklog-input').placeholder = isTimed(ex) ? 'Quick log: 25kg 30s 45s' : 'Quick log: 80x8 85x6 @8';
+
+            const optTime = document.getElementById('ex-opt-time');
+            const optPerSide = document.getElementById('ex-opt-perside');
+            optTime.classList.toggle('hidden', exType !== 'gym');
+            optPerSide.classList.toggle('hidden', exType !== 'gym');
+            optTime.classList.toggle('active', isTimed(ex));
+            optPerSide.classList.toggle('active', !!ex.perSide);
 
             const swappedEl = document.getElementById('ex-detail-swapped');
             if (ex.swappedFrom) {
@@ -1123,40 +1470,48 @@
             renderSetsArea();
         }
 
-        // Best set of a session: heaviest load, then most reps at that load
-        function getTopSet(sets) {
-            const valid = sets.filter(s => Number(s.reps) > 0);
+        // Best set of a session: heaviest load, then most reps (or longest time) at that load
+        function getTopSet(sets, timed) {
+            const field = timed ? 'duration' : 'reps';
+            const valid = sets.filter(s => Number(s[field]) > 0);
             if (valid.length === 0) return null;
             return valid.reduce((best, s) => {
-                const w = Number(s.weight) || 0, r = Number(s.reps);
-                if (!best || w > best.weight || (w === best.weight && r > best.reps)) return { weight: w, reps: r };
+                const w = Number(s.weight) || 0, a = Number(s[field]);
+                if (!best || w > best.weight || (w === best.weight && a > best.amount)) return { weight: w, amount: a };
                 return best;
             }, null);
         }
 
-        function beatsTopSet(set, top) {
-            const w = Number(set.weight) || 0, r = Number(set.reps) || 0;
-            return r > 0 && (w > top.weight || (w === top.weight && r > top.reps));
+        function beatsTopSet(set, top, timed) {
+            const w = Number(set.weight) || 0, a = Number(timed ? set.duration : set.reps) || 0;
+            return a > 0 && (w > top.weight || (w === top.weight && a > top.amount));
         }
 
         function renderTarget(ex) {
             const targetEl = document.getElementById('ex-detail-target');
+            const timed = isTimed(ex);
             const last = (ex.type || 'gym') === 'gym' ? getLastSession(ex.name, 'gym') : null;
-            const top = last ? getTopSet(last.sets) : null;
+            // Compare like with like: a timed session is no target for a reps one
+            const top = last && (last.mode === 'time') === timed ? getTopSet(last.sets, timed) : null;
             if (!top) {
                 targetEl.className = 'hidden';
                 targetEl.innerHTML = '';
                 return;
             }
 
+            const unit = weightUnit(ex);
+            const amountText = (a) => timed ? formatDuration(a) : `${a}`;
             const lastText = last.sets
-                .filter(s => Number(s.reps) > 0)
-                .map(s => `${Number(s.weight) > 0 ? formatWeight(s.weight) + '×' : '×'}${s.reps}`)
-                .join(' · ');
+                .filter(s => Number(timed ? s.duration : s.reps) > 0)
+                .map(s => timed
+                    ? `${Number(s.weight) > 0 ? formatWeight(s.weight) + 'kg ' : ''}${formatDuration(s.duration)}`
+                    : `${Number(s.weight) > 0 ? formatWeight(s.weight) + '×' : '×'}${s.reps}`)
+                .join(' · ') + (last.perSide ? ' (kg per lato)' : '');
+            const nextAmount = timed ? top.amount + durationStep(top.amount) : top.amount + 1;
             const goal = top.weight > 0
-                ? `<b>${formatWeight(top.weight + 2.5)}kg × ${top.reps}</b> oppure <b>${formatWeight(top.weight)}kg × ${top.reps + 1}</b>`
-                : `<b>× ${top.reps + 1}</b> ripetute`;
-            const beaten = (ex.sets || []).some(s => isSetDoneToday(s) && beatsTopSet(s, top));
+                ? `<b>${formatWeight(top.weight + 2.5)}${unit} × ${amountText(top.amount)}</b> oppure <b>${formatWeight(top.weight)}${unit} × ${amountText(nextAmount)}</b>`
+                : (timed ? `<b>${formatDuration(nextAmount)}</b>` : `<b>× ${nextAmount}</b> ripetute`);
+            const beaten = (ex.sets || []).some(s => isSetDoneToday(s) && beatsTopSet(s, top, timed));
 
             targetEl.className = `mb-4 rounded-2xl p-4 border-2 shadow-sport ${beaten ? 'bg-green-50 border-green-300' : 'bg-white border-gray-100'}`;
             targetEl.innerHTML = `
@@ -1179,6 +1534,23 @@
                         oninput="updateSetData(${idx}, '${field}', this.value)"
                         class="w-full min-w-0 bg-transparent text-center text-gray-900 font-black text-base focus:outline-none focus:bg-white rounded-md py-2 px-0">
                     <button type="button" onclick="stepSet(${idx}, '${field}', ${step})" class="${btn}">+${formatWeight(step)}</button>
+                </div>
+            `;
+        }
+
+        // Time stepper: the step grows with the length (5s for a plank, 1m for the tapis roulant)
+        function durationStepperHtml(idx, value) {
+            const btn = 'w-7 h-10 shrink-0 rounded-lg bg-gray-200 text-gray-700 font-black text-[10px] active:scale-90 active:bg-gray-300 transition-all';
+            const v = Number(value) || 0;
+            const down = durationStep(Math.max(0, v - 1));
+            const up = durationStep(v);
+            return `
+                <div class="flex-1 min-w-0 flex items-center gap-0.5 bg-gray-50 rounded-lg p-0.5">
+                    <button type="button" onclick="stepSet(${idx}, 'duration', -${down})" class="${btn}">−${formatStep(down)}</button>
+                    <input type="text" placeholder="30s" value="${escapeHtml(formatDuration(value))}"
+                        onchange="updateSetDuration(${idx}, this.value)"
+                        class="w-full min-w-0 bg-transparent text-center text-gray-900 font-black text-base focus:outline-none focus:bg-white rounded-md py-2 px-0">
+                    <button type="button" onclick="stepSet(${idx}, 'duration', ${up})" class="${btn}">+${formatStep(up)}</button>
                 </div>
             `;
         }
@@ -1210,8 +1582,10 @@
             } else if(exType === 'gym') {
                 const tableHeader = document.createElement('div');
                 tableHeader.className = "flex gap-2 px-2 pb-1 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest";
+                const timed = isTimed(ex);
+                const weightLabel = (timed ? 'Zavorra ' : '') + (ex.perSide ? 'Kg per lato' : 'Kg');
                 tableHeader.innerHTML = `
-                    <div class="flex-grow flex gap-1.5"><div class="flex-1 text-center">Kg</div><div class="flex-1 text-center">Reps</div></div>
+                    <div class="flex-grow flex gap-1.5"><div class="flex-1 text-center">${weightLabel}</div><div class="flex-1 text-center">${timed ? 'Tempo' : 'Reps'}</div></div>
                     <div class="w-12 sm:w-14 text-center">Fatta</div>
                 `;
                 setsContainer.appendChild(tableHeader);
@@ -1224,8 +1598,8 @@
                     row.innerHTML = `
                         <div class="flex-grow min-w-0 flex flex-col gap-1.5">
                             <div class="flex gap-1.5">
-                                ${stepperHtml(idx, 'weight', set.weight, 2.5, 'decimal', 'kg')}
-                                ${stepperHtml(idx, 'reps', set.reps, 1, 'numeric', 'reps')}
+                                ${stepperHtml(idx, 'weight', set.weight, 2.5, 'decimal', timed ? '0' : 'kg')}
+                                ${timed ? durationStepperHtml(idx, set.duration) : stepperHtml(idx, 'reps', set.reps, 1, 'numeric', 'reps')}
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <span class="w-6 shrink-0 text-center text-sm font-black italic text-gray-300">${idx + 1}</span>
@@ -1339,7 +1713,7 @@
             saveToStorage();
             input.value = '';
             input.blur();
-            renderSetsArea();
+            renderExerciseDetail();
             showToast(`Registrate ${parsed.sets.length} serie`, false);
         };
 
@@ -1358,10 +1732,13 @@
                 if(!ex.sets) ex.sets = [];
                 let newSet;
                 if(exType === 'gym') {
-                    newSet = { reps: '', weight: '', fatigue: '' };
+                    const timed = isTimed(ex);
+                    newSet = emptyGymSet(timed);
                     if (ex.sets.length > 0) {
                         const last = ex.sets[ex.sets.length - 1];
-                        newSet = { reps: last.reps, weight: last.weight, fatigue: last.fatigue };
+                        newSet = timed
+                            ? { duration: last.duration ?? '', weight: last.weight, fatigue: last.fatigue }
+                            : { reps: last.reps ?? '', weight: last.weight, fatigue: last.fatigue };
                     }
                 } else {
                     newSet = { distance: '', count: '', time: '', rest: '' };
@@ -1393,6 +1770,37 @@
                 }
                 saveToStorage();
             }
+        };
+
+        // Applied when leaving the field: "1:30", "30s", "30m" → seconds, shown back formatted
+        window.updateSetDuration = (idx, value) => {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if(!ex || !ex.sets || !ex.sets[idx]) return;
+            const sec = parseDuration(value);
+            if (value.trim() !== '' && sec === '') showToast('Tempo non valido. Es: 30s, 1:30, 30m');
+            else ex.sets[idx].duration = sec;
+            saveToStorage();
+            renderSetsArea();
+        };
+
+        // "A tempo" / "Per lato" chips in the exercise detail
+        window.toggleExerciseOption = (opt) => {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if(!ex || (ex.type || 'gym') !== 'gym') return;
+            if (opt === 'time') {
+                ex.mode = isTimed(ex) ? 'reps' : 'time';
+                // Sets keep their load; the empty field (reps or time) is filled in by the user
+                (ex.sets || []).forEach(s => {
+                    if (ex.mode === 'time' && s.duration === undefined) s.duration = '';
+                    if (ex.mode === 'reps' && s.reps === undefined) s.reps = '';
+                });
+                showToast(ex.mode === 'time' ? 'Esercizio a tempo' : 'Esercizio a ripetute', false);
+            } else {
+                ex.perSide = !ex.perSide;
+                showToast(ex.perSide ? 'Peso indicato per lato' : 'Peso totale', false);
+            }
+            saveToStorage();
+            renderExerciseDetail();
         };
 
         // --- SWAP EXERCISE --- //
@@ -1448,16 +1856,22 @@
             if (ex.swappedFrom && sameName(newName, ex.swappedFrom)) {
                 ex.name = ex.swappedFrom;
                 if (ex.swappedSets) ex.sets = ex.swappedSets;
+                if (ex.swappedOptions) { ex.mode = ex.swappedOptions.mode; ex.perSide = ex.swappedOptions.perSide; }
                 delete ex.swappedFrom;
                 delete ex.swappedSets;
+                delete ex.swappedOptions;
             } else {
                 if (!ex.swappedFrom) {
                     ex.swappedFrom = ex.name;
                     ex.swappedSets = (ex.sets || []).map(copySetValues);
+                    ex.swappedOptions = { mode: ex.mode || 'reps', perSide: !!ex.perSide };
                 }
                 ex.name = newName;
                 const last = getLastSession(newName, ex.type || 'gym');
-                if (last) ex.sets = last.sets.map(copySetValues);
+                if (last) {
+                    ex.sets = last.sets.map(copySetValues);
+                    if ((ex.type || 'gym') === 'gym') { ex.mode = last.mode; ex.perSide = last.perSide; }
+                }
             }
             syncCompletion(ex);
             saveToStorage();
@@ -1777,8 +2191,9 @@
         window.exportBackup = () => {
             const backup = {
                 app: 'ghisa',
-                version: 1,
+                version: 2,
                 exportedAt: new Date().toISOString(),
+                days: workoutDays,
                 workouts: workouts,
                 history: JSON.parse(localStorage.getItem(HISTORY_KEY)) || {},
                 timer: timerTargetSeconds
@@ -1810,8 +2225,12 @@
                 }
                 if (!confirm('Importare il backup? I dati attuali verranno sostituiti.')) return;
 
+                // Backups from older versions have weekdays instead of workouts: converted here
+                const importedDays = migrateToWorkoutDays(data.workouts, Array.isArray(data.days) ? data.days : []);
                 if (!safeSetItem(STORAGE_KEY, JSON.stringify(data.workouts))) return;
                 workouts = data.workouts;
+                workoutDays = importedDays.length > 0 ? importedDays : [{ id: generateId(), name: 'Allenamento 1', color: COLOR_CLASSES[0] }];
+                saveDays();
 
                 const history = data.history || {};
                 Object.keys(history).forEach(date => {
@@ -1831,6 +2250,7 @@
                 viewExercise.classList.add('hidden');
                 viewDay.classList.add('hidden');
                 viewWeek.classList.remove('hidden');
+                renderWorkoutList();
                 closeBackupModal();
                 showToast('Backup importato!', false);
             };
@@ -1860,6 +2280,7 @@
 
         // Init UI on load
         cleanHistoryImages();
+        renderWorkoutList();
         updateTimerUI(timerTargetSeconds, timerTargetSeconds);
 
     </script>
