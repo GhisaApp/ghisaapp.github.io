@@ -189,6 +189,7 @@
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-xs opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.1</span>
             </div>
         </section>
 
@@ -1838,7 +1839,23 @@
 
         // Offline support + installability (only works when served over http/https)
         if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-            navigator.serviceWorker.register('sw.js');
+            // When a new version is published, the new service worker takes over:
+            // reload once so the new page shows up without closing the app
+            const hadController = !!navigator.serviceWorker.controller;
+            let reloading = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!hadController || reloading) return;
+                reloading = true;
+                location.reload();
+            });
+
+            navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+                reg.update();
+                // An installed app can stay open for days: check again whenever it comes back on screen
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) reg.update().catch(() => {});
+                });
+            });
         }
 
         // Init UI on load

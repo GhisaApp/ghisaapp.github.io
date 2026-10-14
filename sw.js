@@ -1,6 +1,7 @@
 // Service worker: makes Ghisa installable and usable offline.
-// Bump CACHE_VERSION when the list of app files changes.
-const CACHE_VERSION = 'ghisa-v1';
+// Bump CACHE_VERSION on every release: the changed sw.js is what tells
+// installed apps that a new version is out.
+const CACHE_VERSION = 'ghisa-v1.1';
 
 const APP_FILES = [
     './',
@@ -35,9 +36,11 @@ self.addEventListener('fetch', (event) => {
     const sameOrigin = new URL(request.url).origin === self.location.origin;
 
     if (sameOrigin) {
-        // App files: network first so updates arrive right away, cache when offline
+        // App files: network first so updates arrive right away, cache when offline.
+        // 'no-cache' asks the server every time instead of reusing the browser's
+        // HTTP copy (GitHub Pages lets it live 10 minutes)
         event.respondWith(
-            fetch(request)
+            fetch(request, { cache: 'no-cache' })
                 .then(response => {
                     const copy = response.clone();
                     caches.open(CACHE_VERSION).then(cache => cache.put(request, copy));
