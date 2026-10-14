@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scarica Ghisa</title>
+    <meta name="description" content="Ghisa è il gym tracker gratuito per palestra, corsa e nuoto: serie in un tap, timer di recupero, progressi e condivisione sui social.">
+    <meta name="theme-color" content="#131315">
+
+    <!-- Link preview (WhatsApp, Instagram, Telegram...) -->
+    <meta property="og:title" content="Scarica Ghisa">
+    <meta property="og:description" content="Il gym tracker per palestra, corsa e nuoto. Gratis, senza account, funziona anche offline.">
+    <meta property="og:image" content="https://claudiogirolamo736-bot.github.io/ghisa/icon-512.png">
+    <meta property="og:url" content="https://claudiogirolamo736-bot.github.io/ghisa/scarica-ghisa/">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/svg+xml" href="../icon.svg">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <!-- Same manifest as the app: on Android this page can offer "Installa" directly -->
+    <link rel="manifest" href="../manifest.json">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,800;0,900;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Montserrat', 'sans-serif'] } } } };
+    </script>
+    <style>
+        :root { --bg: #0e0e10; --card: #18181b; --line: #27272a; --accent: #ff5722; --muted: #a1a1aa; }
+        html, body { overscroll-behavior: none; }
+        body {
+            background-color: var(--bg);
+            color: #ffffff;
+            background-image:
+                radial-gradient(circle at 90% -10%, rgba(255, 82, 18, 0.35), transparent 55%),
+                radial-gradient(circle at -10% 110%, rgba(41, 121, 255, 0.22), transparent 55%),
+                radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: auto, auto, 22px 22px;
+            background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .card { background: var(--card); border: 1px solid var(--line); }
+        .step-num { background: var(--accent); }
+        .os-tab { transition: all 0.2s ease; color: var(--muted); }
+        .os-tab.active { background: #ffffff; color: #111827; }
+        .glow { box-shadow: 0 10px 40px -8px rgba(255, 87, 34, 0.6); }
+        .fade-up { animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .fade-up { animation: none; } }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+    <main class="max-w-md mx-auto px-4 pt-10 pb-12">
+
+        <!-- Hero -->
+        <section class="text-center fade-up">
+            <img src="../icon.svg" alt="" class="w-24 h-24 mx-auto rounded-[1.6rem] shadow-2xl">
+            <h1 class="mt-5 text-5xl font-black italic uppercase tracking-tighter">Ghisa</h1>
+            <p class="mt-2 text-sm font-semibold" style="color: var(--muted)">Il gym tracker per palestra, corsa e nuoto.</p>
+            <p class="mt-1 text-xs font-bold uppercase tracking-widest" style="color: var(--muted)">Gratis · Senza account · Anche offline</p>
+
+            <button id="btn-install" class="hidden mt-7 w-full bg-[#ff5722] hover:bg-[#e64a19] text-white py-4 rounded-2xl font-black uppercase italic text-lg glow active:scale-[0.98] transition-all items-center justify-center gap-3">
+                <i class="fa-solid fa-download"></i> Installa Ghisa
+            </button>
+            <a id="btn-open" href="../index.html" class="mt-7 w-full bg-[#ff5722] hover:bg-[#e64a19] text-white py-4 rounded-2xl font-black uppercase italic text-lg glow active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+                <i class="fa-solid fa-dumbbell"></i> Apri Ghisa
+            </a>
+            <p id="install-note" class="mt-3 text-xs font-semibold" style="color: var(--muted)">Per averla come un'app vera, aggiungila alla schermata Home: segui i passaggi qui sotto.</p>
+        </section>
+
+        <!-- How to install -->
+        <section id="how" class="mt-9 fade-up" style="animation-delay: 0.08s">
+            <h2 class="text-xl font-black italic uppercase tracking-tight mb-3">Come installarla</h2>
+            <div class="flex gap-1 p-1 rounded-xl mb-3" style="background: var(--line)">
+                <button type="button" data-os="ios" class="os-tab flex-1 py-2 rounded-lg text-xs font-black uppercase"><i class="fa-brands fa-apple mr-1"></i> iPhone</button>
+                <button type="button" data-os="android" class="os-tab flex-1 py-2 rounded-lg text-xs font-black uppercase"><i class="fa-brands fa-android mr-1"></i> Android</button>
+            </div>
+
+            <ol id="steps-ios" class="card rounded-2xl p-4 space-y-4">
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black">1</span>
+                    <p class="text-sm font-semibold leading-snug">Apri questa pagina con <b>Safari</b> (con Chrome sull'iPhone non si può installare).</p>
+                </li>
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black">2</span>
+                    <p class="text-sm font-semibold leading-snug">Tocca <b>Apri Ghisa</b>, poi il pulsante <b>Condividi</b> <i class="fa-solid fa-arrow-up-from-bracket mx-0.5"></i> in basso.</p>
+                </li>
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black">3</span>
+                    <p class="text-sm font-semibold leading-snug">Scorri e scegli <b>Aggiungi alla schermata Home</b> <i class="fa-regular fa-square-plus mx-0.5"></i>, poi <b>Aggiungi</b>.</p>
+                </li>
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black"><i class="fa-solid fa-check text-xs"></i></span>
+                    <p class="text-sm font-semibold leading-snug">Fatto: trovi l'icona di Ghisa tra le tue app.</p>
+                </li>
+            </ol>
+
+            <ol id="steps-android" class="hidden card rounded-2xl p-4 space-y-4">
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black">1</span>
+                    <p class="text-sm font-semibold leading-snug">Apri questa pagina con <b>Chrome</b>. Se vedi il pulsante <b>Installa Ghisa</b> qui sopra, toccalo e hai finito.</p>
+                </li>
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black">2</span>
+                    <p class="text-sm font-semibold leading-snug">Altrimenti tocca <b>Apri Ghisa</b>, poi il menu <i class="fa-solid fa-ellipsis-vertical mx-0.5"></i> in alto a destra.</p>
+                </li>
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black">3</span>
+                    <p class="text-sm font-semibold leading-snug">Scegli <b>Installa app</b> (o <b>Aggiungi a schermata Home</b>) e conferma.</p>
+                </li>
+                <li class="flex gap-3">
+                    <span class="step-num shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black"><i class="fa-solid fa-check text-xs"></i></span>
+                    <p class="text-sm font-semibold leading-snug">Fatto: trovi l'icona di Ghisa tra le tue app.</p>
+                </li>
+            </ol>
+        </section>
+
+        <!-- What it does -->
+        <section class="mt-9 fade-up" style="animation-delay: 0.16s">
+            <h2 class="text-xl font-black italic uppercase tracking-tight mb-3">Cosa fa</h2>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="card rounded-2xl p-3">
+                    <i class="fa-solid fa-check text-[#00e676] text-lg"></i>
+                    <h3 class="mt-2 text-sm font-black uppercase italic">Serie in un tap</h3>
+                    <p class="mt-1 text-xs font-medium" style="color: var(--muted)">Carichi dell'ultima volta già pronti, +/- rapidi.</p>
+                </div>
+                <div class="card rounded-2xl p-3">
+                    <i class="fa-solid fa-stopwatch text-[#ff5722] text-lg"></i>
+                    <h3 class="mt-2 text-sm font-black uppercase italic">Timer recupero</h3>
+                    <p class="mt-1 text-xs font-medium" style="color: var(--muted)">Parte da solo quando spunti la serie.</p>
+                </div>
+                <div class="card rounded-2xl p-3">
+                    <i class="fa-solid fa-chart-line text-[#2979ff] text-lg"></i>
+                    <h3 class="mt-2 text-sm font-black uppercase italic">Progressi</h3>
+                    <p class="mt-1 text-xs font-medium" style="color: var(--muted)">Grafici per esercizio e target da battere.</p>
+                </div>
+                <div class="card rounded-2xl p-3">
+                    <i class="fa-solid fa-share-nodes text-[#d500f9] text-lg"></i>
+                    <h3 class="mt-2 text-sm font-black uppercase italic">Condividi</h3>
+                    <p class="mt-1 text-xs font-medium" style="color: var(--muted)">Storie per Instagram ed Excel per l'IA.</p>
+                </div>
+            </div>
+            <p class="mt-3 text-[11px] font-medium text-center" style="color: var(--muted)">
+                <i class="fa-solid fa-lock mr-1"></i> I tuoi dati restano sul telefono. Usa <b>Backup</b> nell'app per salvarli o passarli a un altro telefono.
+            </p>
+        </section>
+
+        <footer class="mt-10 text-center">
+            <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--muted)">Made by Micheleru' and Carlodon'</span>
+        </footer>
+    </main>
+
+    <script>
+        // Show the right instructions first (iPhone / Android)
+        const ua = navigator.userAgent;
+        const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const showOS = (os) => {
+            document.querySelectorAll('.os-tab').forEach(b => b.classList.toggle('active', b.dataset.os === os));
+            document.getElementById('steps-ios').classList.toggle('hidden', os !== 'ios');
+            document.getElementById('steps-android').classList.toggle('hidden', os !== 'android');
+        };
+        document.querySelectorAll('.os-tab').forEach(b => b.addEventListener('click', () => showOS(b.dataset.os)));
+        showOS(isIOS ? 'ios' : 'android');
+
+        // Already installed and opened from the icon: just open the app
+        if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+            document.getElementById('install-note').textContent = 'Ghisa è già installata.';
+            document.getElementById('how').classList.add('hidden');
+        }
+
+        // Android / Chrome: the browser can install the app straight from here
+        let installEvent = null;
+        const installBtn = document.getElementById('btn-install');
+        const openBtn = document.getElementById('btn-open');
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installEvent = e;
+            installBtn.classList.remove('hidden');
+            installBtn.classList.add('flex');
+            openBtn.classList.remove('bg-[#ff5722]', 'glow');
+            openBtn.classList.add('bg-transparent', 'border-2', 'border-white/20', 'mt-3');
+            openBtn.classList.remove('mt-7');
+            document.getElementById('install-note').textContent = 'Un tocco e la trovi tra le tue app.';
+        });
+        installBtn.addEventListener('click', async () => {
+            if (!installEvent) return;
+            installEvent.prompt();
+            const choice = await installEvent.userChoice;
+            installEvent = null;
+            if (choice.outcome === 'accepted') {
+                installBtn.classList.add('hidden');
+                installBtn.classList.remove('flex');
+                document.getElementById('install-note').textContent = 'Installata! Trovi Ghisa tra le tue app.';
+            }
+        });
+
+        // Same service worker as the app (needed for installing and offline use)
+        if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+            navigator.serviceWorker.register('../sw.js', { scope: '../', updateViaCache: 'none' });
+        }
+    </script>
+</body>
+</html>

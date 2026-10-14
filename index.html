@@ -120,6 +120,9 @@
         .type-btn.active[data-type="run"] { background-color: #111827; color: white; border-color: #ff5722; }
         .type-btn.active[data-type="swim"] { background-color: #111827; color: white; border-color: #00bcd4; }
         .opt-chip { transition: all 0.2s ease; }
+        .ex-chip { display: flex; align-items: center; gap: 0.375rem; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; background: #fff; color: #374151; border: 2px solid #e5e7eb; padding: 0.3rem 0.6rem; border-radius: 0.6rem; }
+        .ex-chip:active { transform: scale(0.95); }
+        .ex-chip.active { background-color: #111827; color: white; border-color: #ff5722; }
         .history-tab { transition: all 0.2s ease; }
         .history-tab.active { background-color: #111827; color: white; }
         .share-style { transition: all 0.2s ease; }
@@ -182,7 +185,7 @@
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-[10px] opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.4</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.5</span>
             </div>
         </section>
 
@@ -298,12 +301,15 @@
                 </div>
 
                 <!-- Gym options for the new exercise -->
-                <div id="gym-options" class="flex gap-2 mb-3">
-                    <button type="button" onclick="toggleNewExOption('time')" data-opt="time" class="opt-chip flex-1 py-2 rounded-lg text-xs font-black uppercase border-2 border-gray-200 text-gray-500 flex items-center justify-center gap-2">
+                <div id="gym-options" class="flex gap-1.5 mb-3">
+                    <button type="button" onclick="toggleNewExOption('time')" data-opt="time" class="opt-chip flex-1 py-2 rounded-lg text-[11px] font-black uppercase border-2 border-gray-200 text-gray-500 flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-hourglass-half"></i> A tempo
                     </button>
-                    <button type="button" onclick="toggleNewExOption('perSide')" data-opt="perSide" class="opt-chip flex-1 py-2 rounded-lg text-xs font-black uppercase border-2 border-gray-200 text-gray-500 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-scale-balanced"></i> Peso per lato
+                    <button type="button" onclick="toggleNewExOption('perSide')" data-opt="perSide" class="opt-chip flex-1 py-2 rounded-lg text-[11px] font-black uppercase border-2 border-gray-200 text-gray-500 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-scale-balanced"></i> Per lato
+                    </button>
+                    <button type="button" onclick="toggleNewExOption('bodyweight')" data-opt="bodyweight" class="opt-chip flex-1 py-2 rounded-lg text-[11px] font-black uppercase border-2 border-gray-200 text-gray-500 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-person"></i> Corpo libero
                     </button>
                 </div>
 
@@ -315,7 +321,7 @@
                     </button>
                 </form>
                 <p id="quicklog-hint" class="text-[11px] text-gray-400 font-medium mt-2 px-1">
-                    <i class="fa-solid fa-bolt text-ghisa-accent"></i> Quick log: <b>panca 80x8 85x6</b>, <b>squat 100 8 8 6</b> o <b>plank 25kg 30s 30s</b> registra le serie già fatte.
+                    <i class="fa-solid fa-bolt text-ghisa-accent"></i> Quick log: <span id="quicklog-hint-text"><b>panca 80x8 85x6</b>, <b>squat 100 8 8 6</b> o <b>plank 25kg 30s 30s</b></span> registra le serie già fatte.
                 </p>
             </div>
 
@@ -335,30 +341,36 @@
 
         <section id="view-exercise" class="hidden fade-in">
             <!-- Header/Nav -->
-            <div class="flex items-center gap-3 mb-6">
-                <button onclick="closeExercise()" class="bg-gray-900 text-white shadow-lg w-14 h-14 rounded-2xl flex items-center justify-center transition-all active:scale-95">
-                    <i class="fa-solid fa-arrow-left text-xl"></i>
+            <div class="flex items-center gap-2 mb-3">
+                <button onclick="closeExercise()" class="bg-gray-900 text-white shadow-lg w-11 h-11 shrink-0 rounded-xl flex items-center justify-center transition-all active:scale-95">
+                    <i class="fa-solid fa-arrow-left"></i>
                 </button>
-                <div class="flex-grow bg-white border-2 border-gray-100 rounded-2xl py-3 px-4 shadow-sport flex items-center gap-4 relative overflow-hidden">
-                    <div id="ex-detail-type-indicator" class="absolute top-0 right-0 bottom-0 w-2 bg-ghisa-accent"></div>
-                    <input type="checkbox" id="ex-detail-completed" class="checkbox-custom shrink-0" onchange="toggleDetailCompleted()">
-                    <input type="text" id="ex-detail-name" class="flex-grow text-xl font-black italic uppercase text-gray-900 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-gray-200 rounded px-2 w-full" onblur="saveExerciseName()">
+                <div class="flex-grow min-w-0 bg-white border-2 border-gray-100 rounded-xl py-1.5 px-3 shadow-sport flex items-center gap-3 relative overflow-hidden">
+                    <div id="ex-detail-type-indicator" class="absolute top-0 right-0 bottom-0 w-1.5 bg-ghisa-accent"></div>
+                    <input type="checkbox" id="ex-detail-completed" class="checkbox-custom shrink-0" style="width:1.6rem;height:1.6rem" onchange="toggleDetailCompleted()">
+                    <input type="text" id="ex-detail-name" class="flex-grow min-w-0 text-lg font-black italic uppercase text-gray-900 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-gray-200 rounded px-1 w-full" onblur="saveExerciseName()">
                 </div>
             </div>
 
-            <!-- Swap: machine busy? replace the exercise, keep the work block -->
-            <div class="flex flex-wrap items-center gap-2 mb-4 -mt-2">
-                <button onclick="openSwapModal()" class="text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition-all">
+            <!-- Actions and options: swap, progress, log on another day, exercise kind -->
+            <div class="flex flex-wrap items-center gap-1.5 mb-3">
+                <button onclick="openSwapModal()" class="ex-chip">
                     <i class="fa-solid fa-right-left text-ghisa-accent"></i> Sostituisci
                 </button>
-                <button onclick="openExerciseHistoryFromDetail()" class="text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95 transition-all">
+                <button onclick="openExerciseHistoryFromDetail()" class="ex-chip">
                     <i class="fa-solid fa-chart-line text-ghisa-neonBlue"></i> Progressi
                 </button>
-                <button id="ex-opt-time" onclick="toggleExerciseOption('time')" class="ex-opt opt-chip text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95">
+                <button onclick="openLogDateModal()" class="ex-chip">
+                    <i class="fa-regular fa-calendar-plus text-green-600"></i> Altro giorno
+                </button>
+                <button id="ex-opt-time" onclick="toggleExerciseOption('time')" class="ex-chip opt-chip">
                     <i class="fa-solid fa-hourglass-half"></i> A tempo
                 </button>
-                <button id="ex-opt-perside" onclick="toggleExerciseOption('perSide')" class="ex-opt opt-chip text-xs font-black uppercase tracking-wider bg-white text-gray-700 border-2 border-gray-200 px-3 py-2 rounded-xl flex items-center gap-2 active:scale-95">
+                <button id="ex-opt-perside" onclick="toggleExerciseOption('perSide')" class="ex-chip opt-chip">
                     <i class="fa-solid fa-scale-balanced"></i> Per lato
+                </button>
+                <button id="ex-opt-bodyweight" onclick="toggleExerciseOption('bodyweight')" class="ex-chip opt-chip">
+                    <i class="fa-solid fa-person"></i> Corpo libero
                 </button>
                 <div id="ex-detail-swapped" class="hidden"></div>
             </div>
@@ -367,50 +379,50 @@
             <div id="ex-detail-target" class="hidden"></div>
 
             <!-- Sets/Intervals Area -->
-            <div class="bg-white rounded-3xl shadow-sport border-2 border-gray-100 overflow-hidden mb-6">
-                <div class="px-5 py-4 bg-gray-900 border-b-4 border-gray-700 flex justify-between items-center" id="ex-detail-sets-header">
-                    <h3 class="font-black text-white italic uppercase text-xl tracking-tight flex items-center gap-2">
+            <div class="bg-white rounded-2xl shadow-sport border-2 border-gray-100 overflow-hidden mb-4">
+                <div class="px-4 py-2.5 bg-gray-900 border-b-4 border-gray-700 flex justify-between items-center" id="ex-detail-sets-header">
+                    <h3 class="font-black text-white italic uppercase text-base tracking-tight flex items-center gap-2">
                         <i id="ex-detail-icon" class="fa-solid fa-layer-group text-ghisa-neonBlue"></i>
                         <span id="ex-detail-sets-title">Serie</span>
                     </h3>
-                    <button onclick="addSet()" class="text-xs font-black uppercase tracking-wider text-gray-900 bg-white hover:bg-gray-200 px-4 py-2 rounded-xl transition-all shadow-sport active:scale-95 flex items-center gap-1">
+                    <button onclick="addSet()" class="text-[11px] font-black uppercase tracking-wider text-gray-900 bg-white hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-all active:scale-95 flex items-center gap-1">
                         <i class="fa-solid fa-plus"></i> Aggiungi
                     </button>
                 </div>
 
-                <div id="ex-detail-sets-container" class="bg-gray-50 p-2 sm:p-4 min-h-[100px]">
+                <div id="ex-detail-sets-container" class="bg-gray-50 p-2 sm:p-3 min-h-[80px]">
                     <!-- Populated via JS -->
                 </div>
 
-                <!-- Quick Log: "80x8 85x6" or "100 8 8 6" -->
-                <form id="ex-quicklog-form" class="hidden gap-2 p-2 sm:p-4 pt-0 sm:pt-0 bg-gray-50" onsubmit="submitDetailQuickLog(event)">
+                <!-- Quick Log -->
+                <form id="ex-quicklog-form" class="flex gap-2 p-2 sm:p-3 pt-0 sm:pt-0 bg-gray-50" onsubmit="submitDetailQuickLog(event)">
                     <input type="text" id="ex-quicklog-input" placeholder="Quick log: 80x8 85x6 @8" autocomplete="off" autocapitalize="off"
-                        class="flex-grow min-w-0 bg-white border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 font-bold focus:outline-none focus:border-ghisa-accent transition-all">
-                    <button type="submit" class="bg-gray-900 text-white font-black uppercase text-xs px-4 rounded-xl active:scale-95 transition-all">
+                        class="flex-grow min-w-0 bg-white border-2 border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 font-bold focus:outline-none focus:border-ghisa-accent transition-all">
+                    <button type="submit" class="bg-gray-900 text-white font-black uppercase text-[11px] px-3 rounded-xl active:scale-95 transition-all">
                         <i class="fa-solid fa-bolt text-ghisa-accent"></i> Log
                     </button>
                 </form>
             </div>
 
             <!-- Notes Area: always visible -->
-            <div class="mb-6 bg-white rounded-2xl shadow-sport border-2 border-gray-100 p-4">
-                <label for="ex-detail-notes" class="flex items-center gap-2 mb-2 text-sm text-gray-900 font-black italic uppercase">
+            <div class="mb-4 bg-white rounded-2xl shadow-sport border-2 border-gray-100 p-3">
+                <label for="ex-detail-notes" class="flex items-center gap-2 mb-1.5 text-xs text-gray-900 font-black italic uppercase">
                     <i class="fa-solid fa-pen text-ghisa-accent"></i> Note
                 </label>
-                <textarea id="ex-detail-notes" oninput="saveExerciseNotes()" rows="2" class="w-full bg-gray-50 border-2 border-transparent rounded-xl px-4 py-3 text-gray-700 font-medium focus:outline-none focus:border-gray-900 focus:bg-white transition-all resize-none" placeholder="Pin 4, presa stretta, fatica alta..."></textarea>
+                <textarea id="ex-detail-notes" oninput="saveExerciseNotes()" rows="2" class="w-full bg-gray-50 border-2 border-transparent rounded-xl px-3 py-2 text-sm text-gray-700 font-medium focus:outline-none focus:border-gray-900 focus:bg-white transition-all resize-none" placeholder="Pin 4, presa stretta, fatica alta..."></textarea>
             </div>
 
             <!-- Image Area -->
-            <div class="relative w-full h-48 sm:h-64 rounded-3xl overflow-hidden shadow-sport border-4 border-white mb-6 bg-gray-200 group">
+            <div class="relative w-full h-32 sm:h-44 rounded-2xl overflow-hidden shadow-sport border-4 border-white mb-4 bg-gray-200 group">
                 <img id="ex-detail-img" src="" class="w-full h-full object-cover hidden" alt="Foto Esercizio">
 
                 <div id="ex-detail-placeholder" class="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 flex flex-col items-center justify-center text-gray-500">
-                    <i class="fa-solid fa-camera-retro text-5xl mb-3 text-gray-400"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest text-gray-600">Inserisci Foto</span>
+                    <i class="fa-solid fa-camera-retro text-3xl mb-2 text-gray-400"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-600">Inserisci Foto</span>
                 </div>
 
-                <div class="absolute inset-0 flex flex-col justify-end p-4 bg-black/20 hover:bg-black/50 transition-all cursor-pointer" onclick="document.getElementById('ex-image-upload').click()">
-                    <div class="self-end bg-gray-900 text-white px-4 py-2 rounded-xl shadow-sport font-black uppercase text-xs flex items-center gap-2 transform transition hover:scale-105 active:scale-95">
+                <div class="absolute inset-0 flex flex-col justify-end p-3 bg-black/20 hover:bg-black/50 transition-all cursor-pointer" onclick="document.getElementById('ex-image-upload').click()">
+                    <div class="self-end bg-gray-900 text-white px-3 py-1.5 rounded-lg shadow-sport font-black uppercase text-[11px] flex items-center gap-2 transform transition hover:scale-105 active:scale-95">
                         <i class="fa-solid fa-upload text-ghisa-neonGreen"></i> FOTO
                     </div>
                 </div>
@@ -418,7 +430,7 @@
             </div>
 
             <!-- Delete Button -->
-            <button id="btn-delete-exercise" onclick="smartDeleteExercise(this)" data-confirm="false" class="w-full py-5 text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-2xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-10">
+            <button id="btn-delete-exercise" onclick="smartDeleteExercise(this)" data-confirm="false" class="w-full py-3 text-sm text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-6">
                 <i class="fa-solid fa-trash-can mr-2"></i> Elimina Attività
             </button>
         </section>
@@ -531,7 +543,7 @@
         </div>
     </div>
 
-    <div id="modal-workout"class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
+    <div id="modal-workout" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-sport flex flex-col max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
                 <h3 id="workout-modal-title" class="text-2xl font-black italic uppercase text-gray-900 flex items-center gap-2">
@@ -568,7 +580,52 @@
         </div>
     </div>
 
-    <div id="modal-swap"class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
+        <!-- LOG ON ANOTHER DAY: a forgotten session goes into the right date of the history -->
+    <div id="modal-logdate" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-sport flex flex-col max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-xl font-black italic uppercase text-gray-900 flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-plus text-green-600"></i> Altro giorno
+                </h3>
+                <button onclick="closeLogDateModal()" class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mb-3">Hai dimenticato di registrare <b id="logdate-name" class="uppercase text-gray-700"></b>? Salvalo nel giorno giusto dello storico.</p>
+
+            <form onsubmit="saveLogDate(event)">
+                <label for="logdate-date" class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest">Giorno</label>
+                <input type="date" id="logdate-date" required class="w-full mb-3 bg-gray-50 border-2 border-gray-200 rounded-xl px-3 py-2.5 text-gray-900 font-bold focus:outline-none focus:border-ghisa-neonBlue transition-all">
+
+                <div class="flex gap-1 mb-3 bg-gray-100 p-1 rounded-xl">
+                    <button type="button" onclick="setLogDateMode('sets')" data-mode="sets" class="logdate-tab history-tab flex-1 py-2 rounded-lg text-[11px] font-black uppercase text-gray-500">Serie dell'esercizio</button>
+                    <button type="button" onclick="setLogDateMode('text')" data-mode="text" class="logdate-tab history-tab flex-1 py-2 rounded-lg text-[11px] font-black uppercase text-gray-500">Scrivi</button>
+                </div>
+
+                <div id="logdate-pane-sets" class="mb-4">
+                    <div class="bg-gray-50 border border-gray-100 rounded-xl p-3 mb-2">
+                        <div id="logdate-sets-label" class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1"></div>
+                        <div id="logdate-sets" class="font-black text-sm text-gray-900 break-words"></div>
+                    </div>
+                    <label id="logdate-move-row" class="flex items-center gap-2 text-xs font-bold text-gray-600">
+                        <input type="checkbox" id="logdate-move" class="w-4 h-4 accent-orange-600" checked>
+                        Togli queste serie da oggi
+                    </label>
+                </div>
+
+                <div id="logdate-pane-text" class="hidden mb-4">
+                    <input type="text" id="logdate-text" autocomplete="off" autocapitalize="off"
+                        class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-3 py-2.5 text-gray-900 font-bold placeholder-gray-400 focus:outline-none focus:border-ghisa-accent transition-all">
+                </div>
+
+                <button type="submit" class="w-full bg-gray-900 text-white py-3.5 rounded-xl font-black uppercase text-sm flex items-center justify-center gap-2 active:scale-95 transition-all">
+                    <i class="fa-solid fa-check text-ghisa-neonGreen"></i> Salva nello storico
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-swap" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center p-4 transition-opacity">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-sport flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
                 <h3 class="text-2xl font-black italic uppercase text-gray-900 flex items-center gap-2">
@@ -590,7 +647,7 @@
         </div>
     </div>
 
-    <div id="toast"class="fixed top-20 left-4 right-4 z-[200] hidden justify-center pointer-events-none">
+    <div id="toast" class="fixed top-20 left-4 right-4 z-[200] hidden justify-center pointer-events-none">
         <div id="toast-text" class="max-w-md bg-red-600 text-white font-bold text-sm px-4 py-3 rounded-xl shadow-sport text-center"></div>
     </div>
 
@@ -640,7 +697,7 @@
         let currentDay = null; // id of the open workout
         let currentExerciseId = null;
         let selectedActivityType = 'gym';
-        let newExOptions = { time: false, perSide: false };
+        let newExOptions = { time: false, perSide: false, bodyweight: false };
 
         // Timer Variables
         const TIMER_STORAGE_KEY = 'ghisa_default_timer';
@@ -787,7 +844,7 @@
             for (const date of dates) {
                 const entry = (historyData[date] || []).find(ex => sameName(ex.name, name) && (ex.type || 'gym') === type);
                 if (entry && (entry.sets || []).length > 0) {
-                    return { date, sets: entry.sets, notes: entry.notes || '', mode: entry.mode || 'reps', perSide: !!entry.perSide };
+                    return { date, sets: entry.sets, notes: entry.notes || '', mode: entry.mode || 'reps', perSide: !!entry.perSide, bodyweight: !!entry.bodyweight };
                 }
             }
             return null;
@@ -857,13 +914,15 @@
             return sec < 60 ? `${sec}s` : `${sec / 60}m`;
         }
 
-        // --- QUICK LOG PARSER --- //
+        // --- QUICK LOG PARSER (gym) --- //
         // "panca 80x8 85x6"   → name "panca", sets 80kg×8, 85kg×6
         // "squat 100 8 8 6"   → first bare number is the load, the next ones are reps
         // "80x8x3"            → 3 sets of 80kg×8;  "@8" after a set → RPE 8
         // "100kg 8 8"         → load in kg, then reps;  words after the numbers → note of the last set
         // "plank 25kg 30s 45s"→ time sets with 25kg; "tapis 30m"; "25x30s"
-        function parseQuickLog(text) {
+        // Bodyweight (opts.bodyweight): "trazioni 10 8 8" → reps only; "3x10" → 3 sets of 10
+        function parseQuickLog(text, opts = {}) {
+            const body = !!opts.bodyweight;
             const tokens = text.trim().split(/[\s;]+/).filter(Boolean);
             const nameParts = [];
             const noteParts = [];
@@ -884,10 +943,16 @@
                 const t = raw.toLowerCase().replace(/[,.]+$/, '');
                 let m;
                 if ((m = t.match(reWxR))) {
-                    weight = num(m[1]);
-                    const times = Math.min(parseInt(m[3] || '1'), 20);
-                    for (let i = 0; i < times; i++) {
-                        sets.push({ weight, reps: parseInt(m[2]), fatigue: m[4] ? num(m[4]) : '' });
+                    if (body && !t.includes('kg')) {
+                        // Bodyweight "3x10": sets × reps
+                        const times = Math.min(parseInt(m[1]), 20);
+                        for (let i = 0; i < times; i++) sets.push({ weight: '', reps: parseInt(m[2]), fatigue: m[4] ? num(m[4]) : '' });
+                    } else {
+                        weight = num(m[1]);
+                        const times = Math.min(parseInt(m[3] || '1'), 20);
+                        for (let i = 0; i < times; i++) {
+                            sets.push({ weight, reps: parseInt(m[2]), fatigue: m[4] ? num(m[4]) : '' });
+                        }
                     }
                     started = true;
                 } else if ((m = t.match(reWxDur))) {
@@ -903,10 +968,10 @@
                 } else if ((m = t.match(reRpe)) && sets.length > 0) {
                     sets[sets.length - 1].fatigue = num(m[1]);
                 } else if ((m = t.match(reBare))) {
-                    if (weight === null) {
+                    if (weight === null && !body) {
                         weight = num(m[1]);
                     } else {
-                        sets.push({ weight, reps: Math.round(num(m[1])), fatigue: m[2] ? num(m[2]) : '' });
+                        sets.push({ weight: weight === null ? '' : weight, reps: Math.round(num(m[1])), fatigue: m[2] ? num(m[2]) : '' });
                     }
                     started = true;
                 } else if (!started) {
@@ -921,16 +986,108 @@
             return { name: nameParts.join(' '), sets, weight, hasNumbers: started, timed };
         }
 
+        // --- QUICK LOG PARSER (run / swim) --- //
+        // "corsa 5km 25:00"              → 5000 m in 25:00
+        // "ripetute 6x400 1:30 rec 1min" → 6 × 400 m, 1:30 each, recovery "1min"
+        // "6x400 1:30 rec 1' 4x200 40s"  → a new distance starts a new block
+        // Words after "rec" are the recovery (free text); other words after the numbers → note
+        function parseEnduranceLog(text) {
+            const tokens = text.trim().split(/[\s;]+/).filter(Boolean);
+            const nameParts = [];
+            const noteParts = [];
+            const sets = [];
+            let block = null;
+            let started = false;
+            let inRest = false;
+            const meters = (v, unit) => {
+                const n = parseFloat(v.replace(',', '.'));
+                return Math.round(unit === 'km' || unit === 'k' ? n * 1000 : n);
+            };
+            const newBlock = () => { block = { distance: '', count: '', time: '', rest: '' }; sets.push(block); inRest = false; };
+            const reDist = /^(\d+(?:[.,]\d+)?)(km|k|m)$/;
+            const reRepeat = /^(\d+(?:[.,]\d+)?)(km|k|m)?[x×*](\d+(?:[.,]\d+)?)(km|k|m)?$/;
+            const reTime = /^(\d{1,2}:\d{2}(?::\d{2})?|\d+(?:[.,]\d+)?(?:s|sec|min|h|'|''|"))$/;
+
+            for (const raw of tokens) {
+                const t = raw.toLowerCase().replace(/[,;]+$/, '');
+                let m;
+                if (/^(rec|recupero|r)$/.test(t)) {
+                    if (!block) newBlock();
+                    inRest = true;
+                    started = true;
+                    continue;
+                }
+                if ((m = t.match(reRepeat))) {
+                    // "6x400": count × distance; with units, the one with the unit is the distance
+                    let count, distance;
+                    if (m[2] && !m[4]) { distance = meters(m[1], m[2]); count = parseInt(m[3]); }
+                    else if (m[4] && !m[2]) { count = parseInt(m[1]); distance = meters(m[3], m[4]); }
+                    else {
+                        const a = parseFloat(m[1]), b = parseFloat(m[3]);
+                        count = Math.round(Math.min(a, b)); distance = Math.round(Math.max(a, b));
+                    }
+                    newBlock();
+                    block.count = count;
+                    block.distance = distance;
+                    started = true;
+                } else if ((m = t.match(reDist))) {
+                    newBlock();
+                    block.distance = meters(m[1], m[2]);
+                    block.count = 1;
+                    started = true;
+                } else if ((m = t.match(reTime))) {
+                    if (!block) newBlock();
+                    if (inRest) block.rest = block.rest ? `${block.rest} ${raw}` : raw;
+                    else if (!block.time) block.time = t.includes(':') ? t : raw;
+                    else block.rest = block.rest ? `${block.rest} ${raw}` : raw;
+                    started = true;
+                } else if (!started) {
+                    nameParts.push(raw);
+                } else if (inRest && block) {
+                    block.rest = block.rest ? `${block.rest} ${raw}` : raw;
+                } else {
+                    noteParts.push(raw);
+                }
+            }
+            return { name: nameParts.join(' '), sets, hasNumbers: started, note: noteParts.join(' ') };
+        }
+
         // Logged sets replace the exercise's sets and count as done today;
         // time sets ("30s") turn the exercise into a time-based one, and vice versa
-        function applyQuickLog(ex, parsedSets) {
-            const today = getTodayString();
-            const timed = parsedSets.every(s => s.duration !== undefined);
-            ex.mode = timed ? 'time' : 'reps';
-            ex.sets = parsedSets.map(s => timed
-                ? { duration: s.duration, weight: s.weight, fatigue: s.fatigue, note: s.note || '', doneOn: today }
-                : { reps: s.reps ?? '', weight: s.weight, fatigue: s.fatigue, note: s.note || '', doneOn: today });
+        function applyQuickLog(ex, parsedSets, date) {
+            const day = date || getTodayString();
+            ex.sets = buildLoggedSets(ex, parsedSets, day);
+            if ((ex.type || 'gym') === 'gym') ex.mode = parsedSets.every(s => s.duration !== undefined) ? 'time' : 'reps';
             syncCompletion(ex);
+        }
+
+        function buildLoggedSets(ex, parsedSets, doneOn) {
+            if ((ex.type || 'gym') !== 'gym') {
+                return parsedSets.map(s => ({ distance: s.distance, count: s.count, time: s.time, rest: s.rest, doneOn }));
+            }
+            const timed = parsedSets.every(s => s.duration !== undefined);
+            return parsedSets.map(s => timed
+                ? { duration: s.duration, weight: ex.bodyweight ? '' : s.weight, fatigue: s.fatigue, note: s.note || '', doneOn }
+                : { reps: s.reps ?? '', weight: ex.bodyweight ? '' : s.weight, fatigue: s.fatigue, note: s.note || '', doneOn });
+        }
+
+        // Extra words of a run/swim log go to the exercise notes
+        function appendNote(ex, note) {
+            if (!note) return;
+            ex.notes = ex.notes && ex.notes.trim() ? `${ex.notes.trim()}\n${note}` : note;
+        }
+
+        // The right parser for an exercise (or for a new one of this type/options)
+        function parseLogFor(text, type, bodyweight) {
+            return type === 'gym' ? parseQuickLog(text, { bodyweight }) : parseEnduranceLog(text);
+        }
+
+        function quickLogExample(ex) {
+            const type = ex.type || 'gym';
+            if (type === 'run') return '5km 25:00 · 6x400 1:30 rec 1min';
+            if (type === 'swim') return '10x100 1:45 rec 20s';
+            if (isTimed(ex)) return ex.bodyweight ? '30s 45s 45s' : '25kg 30s 45s';
+            return ex.bodyweight ? '12 10 8 · 3x10' : '80x8 85x6 @8';
         }
 
         // Text from the user (or an imported file) must never be read as HTML
@@ -1017,19 +1174,22 @@
             const show = (v) => (v === '' || v === null || v === undefined) ? '–' : escapeHtml(v);
 
             if (exType === 'gym') {
+                // Bodyweight: no load column
+                const body = !!ex.bodyweight;
+                const cols = body ? 'grid-cols-3' : 'grid-cols-4';
                 const rows = sets.map((s, idx) => `
-                    <div class="grid grid-cols-4 text-center py-1.5 ${idx > 0 ? 'border-t border-gray-100' : ''}">
+                    <div class="grid ${cols} text-center py-1.5 ${idx > 0 ? 'border-t border-gray-100' : ''}">
                         <span class="font-black italic text-gray-300">${idx + 1}</span>
                         <span class="font-black text-gray-900">${timed ? show(formatDuration(s.duration)) : show(s.reps)}</span>
-                        <span class="font-black text-gray-900">${show(s.weight === '' || s.weight === undefined ? '' : formatWeight(s.weight))}</span>
+                        ${body ? '' : `<span class="font-black text-gray-900">${show(s.weight === '' || s.weight === undefined ? '' : formatWeight(s.weight))}</span>`}
                         <span class="font-black text-ghisa-accent">${show(s.fatigue)}</span>
-                        ${s.note ? `<span class="col-span-4 text-[11px] text-gray-500 italic pt-0.5">${escapeHtml(s.note)}</span>` : ''}
+                        ${s.note ? `<span class="${body ? 'col-span-3' : 'col-span-4'} text-[11px] text-gray-500 italic pt-0.5">${escapeHtml(s.note)}</span>` : ''}
                     </div>
                 `).join('');
                 return `
                     <div class="mt-3 bg-white rounded-lg border border-gray-100 px-2 py-1 text-sm">
-                        <div class="grid grid-cols-4 text-center text-[9px] font-black text-gray-400 uppercase tracking-widest py-1">
-                            <span>Set</span><span>${timed ? 'Tempo' : 'Reps'}</span><span>${weightUnit(ex)}</span><span class="text-ghisa-accent">RPE</span>
+                        <div class="grid ${cols} text-center text-[9px] font-black text-gray-400 uppercase tracking-widest py-1">
+                            <span>Set</span><span>${timed ? 'Tempo' : 'Reps'}</span>${body ? '' : `<span>${weightUnit(ex)}</span>`}<span class="text-ghisa-accent">RPE</span>
                         </div>
                         ${rows}
                     </div>
@@ -1097,6 +1257,9 @@
                         <button type="button" class="history-progress shrink-0 w-9 h-9 rounded-lg bg-white border border-gray-200 text-ghisa-neonBlue flex items-center justify-center active:scale-90" title="Progressi">
                             <i class="fa-solid fa-chart-line"></i>
                         </button>
+                        <button type="button" class="history-delete shrink-0 w-9 h-9 rounded-lg bg-white border border-gray-200 text-gray-400 flex items-center justify-center active:scale-90 transition-colors" title="Elimina da questo giorno">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                         <div class="shrink-0 ${ex.completed ? 'text-ghisa-neonGreen' : 'text-gray-300'}">
                             <i class="fa-solid ${ex.completed ? 'fa-check-circle' : 'fa-circle-half-stroke'} text-xl"></i>
                         </div>
@@ -1105,6 +1268,18 @@
                     ${ex.notes && ex.notes.trim() !== '' ? `<p class="mt-3 text-xs text-gray-600 bg-white rounded-lg border border-gray-100 p-2 whitespace-pre-line"><i class="fa-solid fa-pen text-ghisa-accent mr-1"></i>${escapeHtml(ex.notes)}</p>` : ''}
                 `;
                 card.querySelector('.history-progress').addEventListener('click', () => openExerciseHistory(ex.name));
+                // Two taps: the first turns the button red, the second deletes
+                const delBtn = card.querySelector('.history-delete');
+                delBtn.addEventListener('click', () => {
+                    if (delBtn.dataset.confirm === 'true') {
+                        deleteHistoryEntry(dateStr, ex);
+                        return;
+                    }
+                    delBtn.dataset.confirm = 'true';
+                    delBtn.className = 'history-delete shrink-0 h-9 px-2 rounded-lg bg-red-600 text-white text-[10px] font-black uppercase flex items-center justify-center active:scale-90';
+                    delBtn.innerHTML = 'Elimina?';
+                    setTimeout(() => { if (delBtn.isConnected) loadHistoryDate(); }, 3000);
+                });
                 container.appendChild(card);
             });
         };
@@ -1190,11 +1365,29 @@
             return sessions;
         }
 
-        // Compact one-line text of a session's sets: "80×8 · 80×8 · 82,5×6"
+        // "1 serie", "3 serie", "1 blocco", "2 blocchi"
+        function countLabel(n, type) {
+            if (type === 'gym') return `${n} serie`;
+            return `${n} ${n === 1 ? 'blocco' : 'blocchi'}`;
+        }
+
+        function formatDistance(m) {
+            m = Number(m) || 0;
+            return m >= 1000 ? `${formatWeight(Math.round(m / 100) / 10)} km` : `${m} m`;
+        }
+
+        // Compact one-line text of a session's sets: "80×8 · 80×8 · 82,5×6", "12 · 10 rip", "6×400 m 1:30"
         function setsSummaryText(session) {
             const sets = session.sets;
             if (session.type !== 'gym') {
-                return sets.map(s => [s.distance ? `${s.distance}m` : '', s.count ? `×${s.count}` : '', s.time || ''].filter(Boolean).join(' ')).filter(Boolean).join(' · ');
+                return sets.map(s => {
+                    const dist = Number(s.distance) > 0 ? `${Number(s.count) > 1 ? s.count + '×' : ''}${formatDistance(s.distance)}` : '';
+                    return [dist, s.time || ''].filter(Boolean).join(' ');
+                }).filter(Boolean).join(' · ');
+            }
+            if (session.mode !== 'time' && !sets.some(s => Number(s.weight) > 0)) {
+                const reps = sets.map(s => s.reps || '–').join(' · ');
+                return reps ? `${reps} rip` : '';
             }
             return sets.map(s => {
                 const w = Number(s.weight) > 0 ? `${formatWeight(s.weight)}kg` : '';
@@ -1486,13 +1679,14 @@
             const rows = [['Data', 'Allenamento', 'Esercizio', 'Tipo', 'Serie', 'Kg', 'Peso per lato', 'Ripetute', 'Tempo', 'RPE', 'Metri', 'N. ripetute', 'Tempo target', 'Recupero', 'Nota serie', 'Note esercizio']];
             entries.forEach(ex => {
                 const type = ex.type || 'gym';
-                const typeLabel = type === 'run' ? 'Corsa' : type === 'swim' ? 'Nuoto' : (ex.mode === 'time' ? 'Palestra a tempo' : 'Palestra');
+                const typeLabel = type === 'run' ? 'Corsa' : type === 'swim' ? 'Nuoto'
+                    : (ex.bodyweight ? 'Corpo libero' : 'Palestra') + (ex.mode === 'time' ? ' a tempo' : '');
                 const sets = (ex.sets || []).length > 0 ? ex.sets : [{}];
                 sets.forEach((s, i) => {
                     const gym = type === 'gym';
                     rows.push([
                         date, ex.dayName || ex.dayOfWeek || '', ex.name, typeLabel, i + 1,
-                        gym ? num(s.weight) : '', gym ? (ex.perSide ? 'sì' : 'no') : '',
+                        gym && !ex.bodyweight ? num(s.weight) : '', gym && !ex.bodyweight ? (ex.perSide ? 'sì' : 'no') : '',
                         gym && ex.mode !== 'time' ? num(s.reps) : '',
                         gym && ex.mode === 'time' ? formatDuration(s.duration) : '',
                         num(s.fatigue),
@@ -1569,7 +1763,7 @@
             if (!top) return '';
             const kg = top.weight > 0 ? `${formatWeight(top.weight)} ${ex.perSide ? 'kg/lato' : 'kg'}` : '';
             if (timed) return [kg, formatDuration(top.amount)].filter(Boolean).join(' · ');
-            return kg ? `${kg} × ${top.amount}` : `× ${top.amount}`;
+            return kg ? `${kg} × ${top.amount}` : `${top.amount} rip`;
         }
 
         // Did this exercise beat its previous session?
@@ -1583,14 +1777,17 @@
         }
 
         function shareStats(entries) {
-            let sets = 0, volume = 0, seconds = 0, meters = 0;
+            let sets = 0, volume = 0, seconds = 0, meters = 0, reps = 0;
             entries.forEach(ex => {
                 const type = ex.type || 'gym';
                 (ex.sets || []).forEach(s => {
                     sets++;
                     if (type !== 'gym') meters += (Number(s.distance) || 0) * (Number(s.count) || 1);
                     else if (ex.mode === 'time') seconds += Number(s.duration) || 0;
-                    else volume += (Number(s.weight) || 0) * (Number(s.reps) || 0) * (ex.perSide ? 2 : 1);
+                    else {
+                        volume += (Number(s.weight) || 0) * (Number(s.reps) || 0) * (ex.perSide ? 2 : 1);
+                        reps += Number(s.reps) || 0;
+                    }
                 });
             });
             const stats = [
@@ -1600,6 +1797,7 @@
             if (volume > 0) stats.push({ label: 'Volume', value: `${Math.round(volume).toLocaleString('it-IT')} kg` });
             else if (seconds > 0) stats.push({ label: 'Tempo', value: formatDuration(seconds) });
             else if (meters > 0) stats.push({ label: 'Distanza', value: meters >= 1000 ? `${formatWeight(Math.round(meters / 100) / 10)} km` : `${meters} m` });
+            else if (reps > 0) stats.push({ label: 'Ripetute', value: String(reps) });
             return stats;
         }
 
@@ -2011,6 +2209,132 @@
             showToast('Immagine salvata!', false);
         };
 
+        // --- LOG ON ANOTHER DAY / FIX THE HISTORY --- //
+        // A session logged for a past date goes straight into that day's history,
+        // without touching today's checks (unless the user moves them)
+        let logDateMode = 'sets';
+
+        function yesterdayString() {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        // Sets offered by default: the ones ticked today, otherwise the ones set in the exercise
+        function logDateSourceSets(ex) {
+            const todaySets = (ex.sets || []).filter(isSetDoneToday);
+            return { todaySets, sets: todaySets.length > 0 ? todaySets : (ex.sets || []) };
+        }
+
+        window.openLogDateModal = () => {
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if (!ex) return;
+            const { todaySets, sets } = logDateSourceSets(ex);
+            const dateInput = document.getElementById('logdate-date');
+            dateInput.max = yesterdayString();
+            dateInput.value = yesterdayString();
+
+            document.getElementById('logdate-name').textContent = ex.name;
+            document.getElementById('logdate-sets-label').textContent = todaySets.length > 0 ? 'Serie spuntate oggi' : 'Serie impostate';
+            document.getElementById('logdate-sets').textContent =
+                countLabel(sets.length, ex.type || 'gym') +
+                (sets.length > 0 ? ` · ${setsSummaryText({ type: ex.type || 'gym', mode: ex.mode || 'reps', sets })}` : '');
+            document.getElementById('logdate-move-row').classList.toggle('hidden', todaySets.length === 0);
+            document.getElementById('logdate-move').checked = true;
+            const text = document.getElementById('logdate-text');
+            text.value = '';
+            text.placeholder = `Es. ${quickLogExample(ex)}`;
+            setLogDateMode('sets');
+
+            const modal = document.getElementById('modal-logdate');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeLogDateModal = () => {
+            const modal = document.getElementById('modal-logdate');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.setLogDateMode = (mode) => {
+            logDateMode = mode;
+            document.querySelectorAll('.logdate-tab').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+            document.getElementById('logdate-pane-sets').classList.toggle('hidden', mode !== 'sets');
+            document.getElementById('logdate-pane-text').classList.toggle('hidden', mode !== 'text');
+            if (mode === 'text') setTimeout(() => document.getElementById('logdate-text').focus(), 50);
+        };
+
+        window.saveLogDate = (event) => {
+            event.preventDefault();
+            const ex = workouts.find(w => w.id === currentExerciseId);
+            if (!ex) return;
+            const date = document.getElementById('logdate-date').value;
+            if (!date || date >= getTodayString()) {
+                showToast('Scegli un giorno passato.');
+                return;
+            }
+
+            const type = ex.type || 'gym';
+            let sets, mode = ex.mode;
+            const { todaySets, sets: sourceSets } = logDateSourceSets(ex);
+            if (logDateMode === 'text') {
+                const parsed = parseLogFor(document.getElementById('logdate-text').value, type, !!ex.bodyweight);
+                if (parsed.sets.length === 0) {
+                    showToast(`Formato non riconosciuto. Es: ${quickLogExample(ex)}`);
+                    return;
+                }
+                sets = buildLoggedSets(ex, parsed.sets, date);
+                if (type === 'gym') mode = parsed.sets.every(s => s.duration !== undefined) ? 'time' : 'reps';
+            } else {
+                sets = sourceSets.map(s => ({ ...copySetValues(s), doneOn: date }));
+            }
+            if (sets.length === 0) {
+                showToast('Nessuna serie da salvare.');
+                return;
+            }
+
+            // Replaces this exercise's entry for that day, if there was one
+            const historyData = getHistoryData();
+            const day = getDay(ex.dayId);
+            const { image, ...plain } = ex;
+            const entry = { ...plain, mode, dayName: day ? day.name : '', sets, completed: true, completedOn: date };
+            historyData[date] = (historyData[date] || []).filter(e => !(e.id === ex.id && sameName(e.name, ex.name))).concat(entry);
+            if (!safeSetItem(HISTORY_KEY, JSON.stringify(historyData))) return;
+
+            // Moved: today's checks go away, so today's history no longer has them
+            if (logDateMode === 'sets' && todaySets.length > 0 && document.getElementById('logdate-move').checked) {
+                markExerciseDone(ex, false);
+            }
+            saveToStorage();
+            closeLogDateModal();
+            renderExerciseDetail();
+            showToast(`Salvato in ${formatShortDate(date)}`, false);
+        };
+
+        // Removes one exercise from one day of the history
+        function deleteHistoryEntry(date, ex) {
+            const historyData = getHistoryData();
+            const list = historyData[date] || [];
+            const idx = list.findIndex(e => e.id === ex.id && sameName(e.name, ex.name));
+            if (idx >= 0) list.splice(idx, 1);
+            if (list.length > 0) historyData[date] = list;
+            else delete historyData[date];
+            safeSetItem(HISTORY_KEY, JSON.stringify(historyData));
+
+            // Today's history is rebuilt from the checks: untick them too, or it would come back
+            if (date === getTodayString()) {
+                const planEx = workouts.find(w => w.id === ex.id);
+                if (planEx) {
+                    markExerciseDone(planEx, false);
+                    saveToStorage();
+                    if (currentDay) renderDayList();
+                }
+            }
+            loadHistoryDate();
+            showToast('Eliminato dallo storico', false);
+        }
+
         // --- WORKOUTS (home) --- //
         function renderWorkoutList() {
             const list = document.getElementById('workout-list');
@@ -2189,22 +2513,38 @@
                 }
             });
             const input = document.getElementById('new-exercise-name');
-            document.getElementById('quicklog-hint').classList.toggle('hidden', type !== 'gym');
             document.getElementById('gym-options').classList.toggle('hidden', type !== 'gym');
-            if(type === 'gym') updateNewExPlaceholder();
-            if(type === 'run') input.placeholder = "ES. FARTLEK 5KM";
-            if(type === 'swim') input.placeholder = "ES. STILE LIBERO";
+            updateNewExPlaceholder();
         };
 
+        // Placeholder and hint follow the activity type and the chosen options
         function updateNewExPlaceholder() {
-            document.getElementById('new-exercise-name').placeholder = newExOptions.time
-                ? 'ES. PLANK 25kg 30s'
-                : (newExOptions.perSide ? 'ES. CURL MANUBRI 14x10' : 'ES. PANCA 80x8 85x6');
+            const input = document.getElementById('new-exercise-name');
+            const hint = document.getElementById('quicklog-hint-text');
+            if (selectedActivityType === 'run') {
+                input.placeholder = 'ES. CORSA 5km 25:00';
+                hint.innerHTML = '<b>corsa 5km 25:00</b> o <b>ripetute 6x400 1:30 rec 1min</b>';
+            } else if (selectedActivityType === 'swim') {
+                input.placeholder = 'ES. STILE 10x100 1:45';
+                hint.innerHTML = '<b>stile 1500m 30:00</b> o <b>stile 10x100 1:45 rec 20s</b>';
+            } else if (newExOptions.time) {
+                input.placeholder = newExOptions.bodyweight ? 'ES. PLANK 30s 45s' : 'ES. PLANK 25kg 30s';
+                hint.innerHTML = '<b>plank 30s 45s</b>, <b>plank 25kg 30s 30s</b> o <b>tapis 30m</b>';
+            } else if (newExOptions.bodyweight) {
+                input.placeholder = 'ES. TRAZIONI 10 8 8';
+                hint.innerHTML = '<b>trazioni 10 8 8</b> o <b>piegamenti 3x15</b>';
+            } else {
+                input.placeholder = newExOptions.perSide ? 'ES. CURL MANUBRI 14x10' : 'ES. PANCA 80x8 85x6';
+                hint.innerHTML = '<b>panca 80x8 85x6</b>, <b>squat 100 8 8 6</b> o <b>plank 25kg 30s 30s</b>';
+            }
         }
 
         window.toggleNewExOption = (opt) => {
             newExOptions[opt] = !newExOptions[opt];
-            document.querySelector(`#gym-options [data-opt="${opt}"]`).classList.toggle('active', newExOptions[opt]);
+            // A bodyweight exercise has no load, so "per side" makes no sense with it
+            if (opt === 'bodyweight' && newExOptions.bodyweight) newExOptions.perSide = false;
+            if (opt === 'perSide' && newExOptions.perSide) newExOptions.bodyweight = false;
+            document.querySelectorAll('#gym-options [data-opt]').forEach(b => b.classList.toggle('active', !!newExOptions[b.dataset.opt]));
             updateNewExPlaceholder();
         };
 
@@ -2294,7 +2634,8 @@
                         subText += ` <span class="text-gray-400 mx-1">|</span> <span class="font-black text-gray-900 normal-case">${escapeHtml(best)}</span>`;
                     }
                 } else {
-                    subText = `<span class="font-bold text-gray-700">${setsCount} RIPETUTE</span>`;
+                    const summary = setsSummaryText({ type: exType, sets: ex.sets || [] });
+                    subText = `<span class="font-bold text-gray-700 normal-case">${escapeHtml(summary || (setsCount + ' blocchi'))}</span>`;
                 }
 
                 card.innerHTML = `
@@ -2322,40 +2663,45 @@
             const text = input.value.trim();
             if(!text || !currentDay) return;
 
-            // Gym: the text may be a quick log ("panca 80x8 85x6", "plank 25kg 30s")
-            const isGym = selectedActivityType === 'gym';
-            const parsed = isGym ? parseQuickLog(text) : { name: text, sets: [], weight: null, hasNumbers: false, timed: false };
+            // The text may be a quick log: "panca 80x8 85x6", "trazioni 10 8 8", "corsa 5km 25:00"
+            const type = selectedActivityType;
+            const isGym = type === 'gym';
+            let parsed = parseLogFor(text, type, newExOptions.bodyweight);
             const name = parsed.name.trim();
             if (!name) {
                 showToast('Scrivi prima il nome dell\'esercizio, poi i numeri. Es: panca 80x8 85x6');
                 return;
             }
 
-            if (parsed.sets.length > 0) {
-                // Logging an exercise already in this workout: exact name, or the only one starting with it
-                const dayGym = workouts.filter(w => w.dayId === currentDay && (w.type || 'gym') === 'gym');
-                const lower = name.toLowerCase();
-                const prefixMatches = dayGym.filter(w => w.name.trim().toLowerCase().startsWith(lower));
-                const existing = dayGym.find(w => sameName(w.name, name)) || (prefixMatches.length === 1 ? prefixMatches[0] : null);
-                if (existing) {
-                    applyQuickLog(existing, parsed.sets);
-                    saveToStorage();
-                    input.value = '';
-                    input.blur();
-                    renderDayList();
-                    showToast(`Registrato: ${existing.name} · ${parsed.sets.length} serie`, false);
-                    return;
-                }
+            // Logging an exercise already in this workout: exact name, or the only one starting with it
+            const sameType = workouts.filter(w => w.dayId === currentDay && (w.type || 'gym') === type);
+            const lower = name.toLowerCase();
+            const prefixMatches = sameType.filter(w => w.name.trim().toLowerCase().startsWith(lower));
+            const existing = sameType.find(w => sameName(w.name, name)) || (prefixMatches.length === 1 ? prefixMatches[0] : null);
+            const last = getLastSession(name, type);
+
+            // Bodyweight decides how bare numbers are read: re-parse once we know it
+            const bodyweight = isGym && (existing ? !!existing.bodyweight : (newExOptions.bodyweight || (!!last && last.bodyweight)));
+            if (isGym && bodyweight !== newExOptions.bodyweight) parsed = parseLogFor(text, type, bodyweight);
+
+            if (parsed.hasNumbers && parsed.sets.length > 0 && existing) {
+                applyQuickLog(existing, parsed.sets);
+                appendNote(existing, parsed.note);
+                saveToStorage();
+                input.value = '';
+                input.blur();
+                renderDayList();
+                showToast(`Registrato: ${existing.name} · ${countLabel(parsed.sets.length, type)}`, false);
+                return;
             }
 
             // Options: chosen on the chips, otherwise the ones used last time for this exercise
-            const last = isGym ? getLastSession(name, 'gym') : null;
-            const timed = newExOptions.time || parsed.timed || (!parsed.hasNumbers && !!last && last.mode === 'time');
-            const perSide = newExOptions.perSide || (!!last && last.perSide);
+            const timed = isGym && (newExOptions.time || parsed.timed || (!parsed.hasNumbers && !!last && last.mode === 'time'));
+            const perSide = isGym && !bodyweight && (newExOptions.perSide || (!!last && last.perSide));
 
             let sets;
             if (!isGym) {
-                sets = [{ distance: '', count: '', time: '', rest: '' }];
+                sets = last ? last.sets.map(copySetValues) : [{ distance: '', count: '', time: '', rest: '' }];
             } else if (parsed.weight !== null && parsed.sets.length === 0) {
                 // "panca 80": just the planned load
                 sets = [{ ...emptyGymSet(timed), weight: parsed.weight }];
@@ -2369,7 +2715,7 @@
             const ex = {
                 id: generateId(),
                 dayId: currentDay,
-                type: selectedActivityType,
+                type: type,
                 name: name,
                 completed: false,
                 image: null,
@@ -2379,15 +2725,19 @@
             if (isGym) {
                 ex.mode = timed ? 'time' : 'reps';
                 ex.perSide = perSide;
+                ex.bodyweight = bodyweight;
             }
-            if (parsed.sets.length > 0) applyQuickLog(ex, parsed.sets);
+            if (parsed.sets.length > 0) {
+                applyQuickLog(ex, parsed.sets);
+                appendNote(ex, parsed.note);
+            }
             workouts.push(ex);
 
             saveToStorage();
             input.value = '';
             input.blur();
             renderDayList();
-            if (parsed.sets.length > 0) showToast(`Registrato: ${name} · ${parsed.sets.length} serie`, false);
+            if (parsed.sets.length > 0) showToast(`Registrato: ${name} · ${countLabel(parsed.sets.length, type)}`, false);
         });
 
         window.toggleExerciseListComplete = (id, isChecked) => {
@@ -2404,7 +2754,7 @@
             const delBtn = document.getElementById('btn-delete-exercise');
             delBtn.dataset.confirm = 'false';
             delBtn.innerHTML = '<i class="fa-solid fa-trash-can mr-2"></i> Elimina Attività';
-            delBtn.className = "w-full py-5 text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-2xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-10";
+            delBtn.className = "w-full py-3 text-sm text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-6";
 
             renderExerciseDetail();
         };
@@ -2431,20 +2781,20 @@
             const headerEl = document.getElementById('ex-detail-sets-header');
 
             if(exType === 'gym') {
-                indicator.className = 'absolute top-0 right-0 bottom-0 w-2 bg-ghisa-neonBlue';
+                indicator.className = 'absolute top-0 right-0 bottom-0 w-1.5 bg-ghisa-neonBlue';
                 iconEl.className = 'fa-solid fa-dumbbell text-ghisa-neonBlue';
                 titleEl.textContent = 'Serie (Palestra)';
-                headerEl.className = 'px-5 py-4 bg-gray-900 border-b-4 border-ghisa-neonBlue flex justify-between items-center';
+                headerEl.className = 'px-4 py-2.5 bg-gray-900 border-b-4 border-ghisa-neonBlue flex justify-between items-center';
             } else if (exType === 'run') {
-                indicator.className = 'absolute top-0 right-0 bottom-0 w-2 bg-yellow-400';
+                indicator.className = 'absolute top-0 right-0 bottom-0 w-1.5 bg-yellow-400';
                 iconEl.className = 'fa-solid fa-person-running text-yellow-400';
                 titleEl.textContent = 'Ripetute (Corsa)';
-                headerEl.className = 'px-5 py-4 bg-gray-900 border-b-4 border-yellow-400 flex justify-between items-center';
+                headerEl.className = 'px-4 py-2.5 bg-gray-900 border-b-4 border-yellow-400 flex justify-between items-center';
             } else {
-                indicator.className = 'absolute top-0 right-0 bottom-0 w-2 bg-cyan-400';
+                indicator.className = 'absolute top-0 right-0 bottom-0 w-1.5 bg-cyan-400';
                 iconEl.className = 'fa-solid fa-person-swimming text-cyan-400';
                 titleEl.textContent = 'Ripetute (Nuoto)';
-                headerEl.className = 'px-5 py-4 bg-gray-900 border-b-4 border-cyan-400 flex justify-between items-center';
+                headerEl.className = 'px-4 py-2.5 bg-gray-900 border-b-4 border-cyan-400 flex justify-between items-center';
             }
 
             const imgEl = document.getElementById('ex-detail-img');
@@ -2460,16 +2810,16 @@
             }
 
             document.getElementById('ex-detail-notes').value = ex.notes || '';
-            document.getElementById('ex-quicklog-form').classList.toggle('hidden', exType !== 'gym');
-            document.getElementById('ex-quicklog-form').classList.toggle('flex', exType === 'gym');
-            document.getElementById('ex-quicklog-input').placeholder = isTimed(ex) ? 'Quick log: 25kg 30s 45s' : 'Quick log: 80x8 85x6 @8';
+            document.getElementById('ex-quicklog-input').placeholder = `Quick log: ${quickLogExample(ex)}`;
 
             const optTime = document.getElementById('ex-opt-time');
             const optPerSide = document.getElementById('ex-opt-perside');
-            optTime.classList.toggle('hidden', exType !== 'gym');
-            optPerSide.classList.toggle('hidden', exType !== 'gym');
+            const optBody = document.getElementById('ex-opt-bodyweight');
+            [optTime, optPerSide, optBody].forEach(el => el.classList.toggle('hidden', exType !== 'gym'));
+            optPerSide.classList.toggle('hidden', exType !== 'gym' || !!ex.bodyweight);
             optTime.classList.toggle('active', isTimed(ex));
             optPerSide.classList.toggle('active', !!ex.perSide);
+            optBody.classList.toggle('active', !!ex.bodyweight);
 
             const swappedEl = document.getElementById('ex-detail-swapped');
             if (ex.swappedFrom) {
@@ -2530,11 +2880,11 @@
                 : (timed ? `<b>${formatDuration(nextAmount)}</b>` : `<b>× ${nextAmount}</b> ripetute`);
             const beaten = (ex.sets || []).some(s => isSetDoneToday(s) && beatsTopSet(s, top, timed));
 
-            targetEl.className = `mb-4 rounded-2xl p-4 border-2 shadow-sport ${beaten ? 'bg-green-50 border-green-300' : 'bg-white border-gray-100'}`;
+            targetEl.className = `mb-3 rounded-xl px-3 py-2.5 border-2 shadow-sport ${beaten ? 'bg-green-50 border-green-300' : 'bg-white border-gray-100'}`;
             targetEl.innerHTML = `
                 <div class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Ultima volta · ${escapeHtml(formatShortDate(last.date))}</div>
-                <div class="font-black text-gray-900 mb-2">${escapeHtml(lastText)}</div>
-                <div class="text-sm text-gray-700 flex items-start gap-2">
+                <div class="font-black text-sm text-gray-900 mb-1">${escapeHtml(lastText)}</div>
+                <div class="text-xs text-gray-700 flex items-start gap-2">
                     ${beaten
                         ? '<i class="fa-solid fa-fire text-ghisa-accent mt-0.5"></i><span><b>Superato!</b> Hai battuto la settimana scorsa.</span>'
                         : `<i class="fa-solid fa-arrow-trend-up text-ghisa-accent mt-0.5"></i><span>Oggi per progredire: ${goal}</span>`}
@@ -2542,32 +2892,31 @@
             `;
         }
 
+        const STEP_BTN = 'w-7 h-9 shrink-0 rounded-lg bg-gray-200 text-gray-700 font-black text-[10px] active:scale-90 active:bg-gray-300 transition-all';
+        const STEP_INPUT = 'w-full min-w-0 bg-transparent text-center text-gray-900 font-black text-[15px] focus:outline-none focus:bg-white rounded-md py-1.5 px-0';
+
         function stepperHtml(idx, field, value, step, inputMode, placeholder) {
-            const btn = 'w-7 h-10 shrink-0 rounded-lg bg-gray-200 text-gray-700 font-black text-[10px] active:scale-90 active:bg-gray-300 transition-all';
             return `
                 <div class="flex-1 min-w-0 flex items-center gap-0.5 bg-gray-50 rounded-lg p-0.5">
-                    <button type="button" onclick="stepSet(${idx}, '${field}', -${step})" class="${btn}">−${formatWeight(step)}</button>
+                    <button type="button" onclick="stepSet(${idx}, '${field}', -${step})" class="${STEP_BTN}">−${formatWeight(step)}</button>
                     <input type="text" inputmode="${inputMode}" placeholder="${placeholder}" value="${escapeHtml(value === '' || value === undefined ? '' : formatWeight(value))}"
-                        oninput="updateSetData(${idx}, '${field}', this.value)"
-                        class="w-full min-w-0 bg-transparent text-center text-gray-900 font-black text-base focus:outline-none focus:bg-white rounded-md py-2 px-0">
-                    <button type="button" onclick="stepSet(${idx}, '${field}', ${step})" class="${btn}">+${formatWeight(step)}</button>
+                        oninput="updateSetData(${idx}, '${field}', this.value)" class="${STEP_INPUT}">
+                    <button type="button" onclick="stepSet(${idx}, '${field}', ${step})" class="${STEP_BTN}">+${formatWeight(step)}</button>
                 </div>
             `;
         }
 
         // Time stepper: the step grows with the length (5s for a plank, 1m for the tapis roulant)
         function durationStepperHtml(idx, value) {
-            const btn = 'w-7 h-10 shrink-0 rounded-lg bg-gray-200 text-gray-700 font-black text-[10px] active:scale-90 active:bg-gray-300 transition-all';
             const v = Number(value) || 0;
             const down = durationStep(Math.max(0, v - 1));
             const up = durationStep(v);
             return `
                 <div class="flex-1 min-w-0 flex items-center gap-0.5 bg-gray-50 rounded-lg p-0.5">
-                    <button type="button" onclick="stepSet(${idx}, 'duration', -${down})" class="${btn}">−${formatStep(down)}</button>
+                    <button type="button" onclick="stepSet(${idx}, 'duration', -${down})" class="${STEP_BTN}">−${formatStep(down)}</button>
                     <input type="text" placeholder="30s" value="${escapeHtml(formatDuration(value))}"
-                        onchange="updateSetDuration(${idx}, this.value)"
-                        class="w-full min-w-0 bg-transparent text-center text-gray-900 font-black text-base focus:outline-none focus:bg-white rounded-md py-2 px-0">
-                    <button type="button" onclick="stepSet(${idx}, 'duration', ${up})" class="${btn}">+${formatStep(up)}</button>
+                        onchange="updateSetDuration(${idx}, this.value)" class="${STEP_INPUT}">
+                    <button type="button" onclick="stepSet(${idx}, 'duration', ${up})" class="${STEP_BTN}">+${formatStep(up)}</button>
                 </div>
             `;
         }
@@ -2575,11 +2924,13 @@
         function checkButtonHtml(idx, done, sizeClass) {
             return `
                 <button type="button" onclick="toggleSetDone(${idx})" title="${done ? 'Serie fatta' : 'Segna come fatta e avvia recupero'}"
-                    class="${sizeClass} shrink-0 rounded-xl flex items-center justify-center text-xl transition-all active:scale-90 ${done ? 'bg-ghisa-neonGreen text-white shadow-[0_4px_15px_rgba(0,230,118,0.4)]' : 'bg-white text-gray-300 border-2 border-dashed border-gray-300'}">
+                    class="${sizeClass} shrink-0 rounded-xl flex items-center justify-center text-lg transition-all active:scale-90 ${done ? 'bg-ghisa-neonGreen text-white shadow-[0_4px_15px_rgba(0,230,118,0.4)]' : 'bg-white text-gray-300 border-2 border-dashed border-gray-300'}">
                     <i class="fa-solid fa-check"></i>
                 </button>
             `;
         }
+
+        const FIELD_INPUT = 'w-full bg-gray-50 border-2 border-transparent rounded-lg px-2.5 py-1.5 text-sm text-gray-900 font-bold focus:outline-none focus:border-gray-900 focus:bg-white transition-all';
 
         // Sets, target and completion check: re-rendered on every set change
         function renderSetsArea() {
@@ -2595,43 +2946,47 @@
             if(!ex.sets) ex.sets = [];
 
             if (ex.sets.length === 0) {
-                setsContainer.innerHTML = `<div class="p-8 text-center text-sm font-bold uppercase tracking-widest text-gray-400">Nessuna serie/ripetuta registrata.</div>`;
+                setsContainer.innerHTML = `<div class="p-6 text-center text-xs font-bold uppercase tracking-widest text-gray-400">Nessuna serie/ripetuta registrata.</div>`;
             } else if(exType === 'gym') {
+                const timed = isTimed(ex);
+                const body = !!ex.bodyweight;
                 const tableHeader = document.createElement('div');
                 tableHeader.className = "flex gap-2 px-2 pb-1 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest";
-                const timed = isTimed(ex);
                 const weightLabel = (timed ? 'Zavorra ' : '') + (ex.perSide ? 'Kg per lato' : 'Kg');
                 tableHeader.innerHTML = `
-                    <div class="flex-grow flex gap-1.5"><div class="flex-1 text-center">${weightLabel}</div><div class="flex-1 text-center">${timed ? 'Tempo' : 'Reps'}</div></div>
-                    <div class="w-12 sm:w-14 text-center">Fatta</div>
+                    <div class="flex-grow flex gap-1.5">
+                        ${body ? '' : `<div class="flex-1 text-center">${weightLabel}</div>`}
+                        <div class="flex-1 text-center">${timed ? 'Tempo' : 'Ripetute'}${body ? ' · corpo libero' : ''}</div>
+                    </div>
+                    <div class="w-11 sm:w-12 text-center">Fatta</div>
                 `;
                 setsContainer.appendChild(tableHeader);
 
                 ex.sets.forEach((set, idx) => {
                     const done = isSetDoneToday(set);
                     const row = document.createElement('div');
-                    row.className = `flex items-stretch gap-2 p-2 rounded-xl mb-2 border shadow-sm transition-colors ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
+                    row.className = `flex items-stretch gap-2 p-1.5 rounded-xl mb-1.5 border shadow-sm transition-colors ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
 
                     row.innerHTML = `
-                        <div class="flex-grow min-w-0 flex flex-col gap-1.5">
+                        <div class="flex-grow min-w-0 flex flex-col gap-1">
                             <div class="flex gap-1.5">
-                                ${stepperHtml(idx, 'weight', set.weight, 2.5, 'decimal', timed ? '0' : 'kg')}
+                                ${body ? '' : stepperHtml(idx, 'weight', set.weight, 2.5, 'decimal', timed ? '0' : 'kg')}
                                 ${timed ? durationStepperHtml(idx, set.duration) : stepperHtml(idx, 'reps', set.reps, 1, 'numeric', 'reps')}
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span class="w-6 shrink-0 text-center text-sm font-black italic text-gray-300">${idx + 1}</span>
+                                <span class="w-5 shrink-0 text-center text-xs font-black italic text-gray-300">${idx + 1}</span>
                                 <input type="text" inputmode="decimal" placeholder="RPE" value="${escapeHtml(set.fatigue === '' || set.fatigue === undefined ? '' : formatWeight(set.fatigue))}"
                                     oninput="updateSetData(${idx}, 'fatigue', this.value)"
-                                    class="w-12 shrink-0 bg-gray-50 rounded-lg py-1.5 text-center text-ghisa-accent font-black text-sm focus:outline-none focus:ring-2 focus:ring-ghisa-accent placeholder-gray-300">
+                                    class="w-11 shrink-0 bg-gray-50 rounded-md py-1 text-center text-ghisa-accent font-black text-xs focus:outline-none focus:ring-2 focus:ring-ghisa-accent placeholder-gray-300">
                                 <input type="text" placeholder="Nota serie (pin 4, presa stretta...)" value="${escapeHtml(set.note)}"
                                     oninput="updateSetData(${idx}, 'note', this.value)"
-                                    class="flex-grow min-w-0 bg-gray-50 rounded-lg py-1.5 px-2 text-gray-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder-gray-300">
-                                <button type="button" onclick="removeSet(${idx})" title="Elimina" class="w-7 h-7 shrink-0 rounded-lg text-gray-300 hover:text-white hover:bg-red-500 flex items-center justify-center transition-all">
+                                    class="flex-grow min-w-0 bg-gray-50 rounded-md py-1 px-2 text-gray-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder-gray-300">
+                                <button type="button" onclick="removeSet(${idx})" title="Elimina" class="w-6 h-6 shrink-0 rounded-md text-gray-300 hover:text-white hover:bg-red-500 flex items-center justify-center transition-all">
                                     <i class="fa-solid fa-xmark text-xs"></i>
                                 </button>
                             </div>
                         </div>
-                        ${checkButtonHtml(idx, done, 'w-12 sm:w-14')}
+                        ${checkButtonHtml(idx, done, 'w-11 sm:w-12')}
                     `;
                     setsContainer.appendChild(row);
                 });
@@ -2639,38 +2994,34 @@
                 ex.sets.forEach((set, idx) => {
                     const done = isSetDoneToday(set);
                     const block = document.createElement('div');
-                    block.className = `p-4 rounded-2xl mb-3 border shadow-sm relative ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`;
+                    block.className = `p-2.5 rounded-xl mb-2 border shadow-sm relative ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`;
 
                     block.innerHTML = `
-                        <div class="flex justify-between items-center mb-3 border-b border-gray-100 pb-2">
-                            <span class="text-sm font-black italic text-gray-400">BLOCCO ${idx + 1}</span>
-                            <div class="flex items-center gap-2">
-                                <button onclick="removeSet(${idx})" class="w-8 h-8 rounded-lg text-gray-400 hover:text-white hover:bg-red-500 bg-gray-100 flex items-center justify-center transition-all">
-                                    <i class="fa-solid fa-trash text-xs"></i>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black italic text-gray-400">BLOCCO ${idx + 1}</span>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="removeSet(${idx})" class="w-7 h-7 rounded-lg text-gray-400 hover:text-white hover:bg-red-500 bg-gray-100 flex items-center justify-center transition-all">
+                                    <i class="fa-solid fa-trash text-[10px]"></i>
                                 </button>
-                                ${checkButtonHtml(idx, done, 'w-10 h-10')}
+                                ${checkButtonHtml(idx, done, 'w-9 h-9')}
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 mb-1">METRI</label>
-                                <input type="number" placeholder="Es. 400" value="${escapeHtml(set.distance)}" oninput="updateSetData(${idx}, 'distance', this.value)"
-                                    class="w-full bg-gray-50 border-2 border-transparent rounded-lg px-3 py-2 text-gray-900 font-bold focus:outline-none focus:border-gray-900 focus:bg-white transition-all">
+                                <label class="block text-[9px] font-black text-gray-400 mb-0.5">METRI</label>
+                                <input type="number" placeholder="Es. 400" value="${escapeHtml(set.distance)}" oninput="updateSetData(${idx}, 'distance', this.value)" class="${FIELD_INPUT}">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 mb-1">N. RIPETUTE</label>
-                                <input type="number" placeholder="Es. 6" value="${escapeHtml(set.count)}" oninput="updateSetData(${idx}, 'count', this.value)"
-                                    class="w-full bg-gray-50 border-2 border-transparent rounded-lg px-3 py-2 text-gray-900 font-bold focus:outline-none focus:border-gray-900 focus:bg-white transition-all">
+                                <label class="block text-[9px] font-black text-gray-400 mb-0.5">N. RIPETUTE</label>
+                                <input type="number" placeholder="Es. 6" value="${escapeHtml(set.count)}" oninput="updateSetData(${idx}, 'count', this.value)" class="${FIELD_INPUT}">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 mb-1">TEMPO TARGET <span class="font-normal lowercase">(es. 1:30)</span></label>
-                                <input type="text" placeholder="Es. 1:30" value="${escapeHtml(set.time)}" oninput="updateSetData(${idx}, 'time', this.value)"
-                                    class="w-full bg-gray-50 border-2 border-transparent rounded-lg px-3 py-2 text-gray-900 font-bold focus:outline-none focus:border-gray-900 focus:bg-white transition-all">
+                                <label class="block text-[9px] font-black text-gray-400 mb-0.5">TEMPO <span class="font-normal lowercase">(es. 1:30)</span></label>
+                                <input type="text" placeholder="Es. 1:30" value="${escapeHtml(set.time)}" oninput="updateSetData(${idx}, 'time', this.value)" class="${FIELD_INPUT}">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black text-gray-400 mb-1">RECUPERO <span class="font-normal lowercase">(testo libero)</span></label>
-                                <input type="text" placeholder="Es. 1 min attivo" value="${escapeHtml(set.rest)}" oninput="updateSetData(${idx}, 'rest', this.value)"
-                                    class="w-full bg-gray-50 border-2 border-transparent rounded-lg px-3 py-2 text-gray-900 font-bold focus:outline-none focus:border-gray-900 focus:bg-white transition-all">
+                                <label class="block text-[9px] font-black text-gray-400 mb-0.5">RECUPERO</label>
+                                <input type="text" placeholder="Es. 1 min" value="${escapeHtml(set.rest)}" oninput="updateSetData(${idx}, 'rest', this.value)" class="${FIELD_INPUT}">
                             </div>
                         </div>
                     `;
@@ -2721,17 +3072,18 @@
             const input = document.getElementById('ex-quicklog-input');
             const ex = workouts.find(w => w.id === currentExerciseId);
             if(!ex) return;
-            const parsed = parseQuickLog(input.value);
+            const parsed = parseLogFor(input.value, ex.type || 'gym', !!ex.bodyweight);
             if (parsed.sets.length === 0) {
-                showToast('Formato non riconosciuto. Es: 80x8 85x6 oppure 100 8 8 6');
+                showToast(`Formato non riconosciuto. Es: ${quickLogExample(ex)}`);
                 return;
             }
             applyQuickLog(ex, parsed.sets);
+            appendNote(ex, parsed.note);
             saveToStorage();
             input.value = '';
             input.blur();
             renderExerciseDetail();
-            showToast(`Registrate ${parsed.sets.length} serie`, false);
+            showToast(`Registrato: ${countLabel(parsed.sets.length, ex.type || 'gym')}`, false);
         };
 
         window.saveExerciseNotes = () => {
@@ -2812,8 +3164,17 @@
                     if (ex.mode === 'reps' && s.reps === undefined) s.reps = '';
                 });
                 showToast(ex.mode === 'time' ? 'Esercizio a tempo' : 'Esercizio a ripetute', false);
+            } else if (opt === 'bodyweight') {
+                ex.bodyweight = !ex.bodyweight;
+                if (ex.bodyweight) {
+                    // No load to track: clear it so it does not count in records and volume
+                    ex.perSide = false;
+                    (ex.sets || []).forEach(s => { s.weight = ''; });
+                }
+                showToast(ex.bodyweight ? 'Corpo libero: niente peso da inserire' : 'Esercizio con pesi', false);
             } else {
                 ex.perSide = !ex.perSide;
+                if (ex.perSide) ex.bodyweight = false;
                 showToast(ex.perSide ? 'Peso indicato per lato' : 'Peso totale', false);
             }
             saveToStorage();
@@ -2873,7 +3234,7 @@
             if (ex.swappedFrom && sameName(newName, ex.swappedFrom)) {
                 ex.name = ex.swappedFrom;
                 if (ex.swappedSets) ex.sets = ex.swappedSets;
-                if (ex.swappedOptions) { ex.mode = ex.swappedOptions.mode; ex.perSide = ex.swappedOptions.perSide; }
+                if (ex.swappedOptions) { ex.mode = ex.swappedOptions.mode; ex.perSide = ex.swappedOptions.perSide; ex.bodyweight = !!ex.swappedOptions.bodyweight; }
                 delete ex.swappedFrom;
                 delete ex.swappedSets;
                 delete ex.swappedOptions;
@@ -2881,13 +3242,13 @@
                 if (!ex.swappedFrom) {
                     ex.swappedFrom = ex.name;
                     ex.swappedSets = (ex.sets || []).map(copySetValues);
-                    ex.swappedOptions = { mode: ex.mode || 'reps', perSide: !!ex.perSide };
+                    ex.swappedOptions = { mode: ex.mode || 'reps', perSide: !!ex.perSide, bodyweight: !!ex.bodyweight };
                 }
                 ex.name = newName;
                 const last = getLastSession(newName, ex.type || 'gym');
                 if (last) {
                     ex.sets = last.sets.map(copySetValues);
-                    if ((ex.type || 'gym') === 'gym') { ex.mode = last.mode; ex.perSide = last.perSide; }
+                    if ((ex.type || 'gym') === 'gym') { ex.mode = last.mode; ex.perSide = last.perSide; ex.bodyweight = last.bodyweight; }
                 }
             }
             syncCompletion(ex);
@@ -2907,11 +3268,11 @@
             } else {
                 btn.dataset.confirm = 'true';
                 btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2"></i> Sicuro? Tocca di nuovo';
-                btn.className = "w-full py-5 text-white font-black uppercase tracking-widest bg-red-600 rounded-2xl shadow-neon-orange transition-all active:scale-[0.98] mb-10";
+                btn.className = "w-full py-3 text-sm text-white font-black uppercase tracking-widest bg-red-600 rounded-xl shadow-neon-orange transition-all active:scale-[0.98] mb-6";
                 deleteTimeout = setTimeout(() => {
                     btn.dataset.confirm = 'false';
                     btn.innerHTML = '<i class="fa-solid fa-trash-can mr-2"></i> Elimina Attività';
-                    btn.className = "w-full py-5 text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-2xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-10";
+                    btn.className = "w-full py-3 text-sm text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-6";
                 }, 3000);
             }
         };
