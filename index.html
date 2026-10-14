@@ -185,7 +185,7 @@
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-[10px] opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.5</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.6</span>
             </div>
         </section>
 
@@ -3602,10 +3602,19 @@
                     return;
                 }
                 if (!confirm('Importare il backup? I dati attuali verranno sostituiti.')) return;
+                if (applyBackupData(data)) {
+                    closeBackupModal();
+                    showToast('Backup importato!', false);
+                }
+            };
+            reader.readAsText(file);
+        };
 
+        // Replaces this phone's data with a backup (or a transfer): false if it could not be saved
+        function applyBackupData(data) {
                 // Backups from older versions have weekdays instead of workouts: converted here
                 const importedDays = migrateToWorkoutDays(data.workouts, Array.isArray(data.days) ? data.days : []);
-                if (!safeSetItem(STORAGE_KEY, JSON.stringify(data.workouts))) return;
+                if (!safeSetItem(STORAGE_KEY, JSON.stringify(data.workouts))) return false;
                 workouts = data.workouts;
                 workoutDays = importedDays.length > 0 ? importedDays : [{ id: generateId(), name: 'Allenamento 1', color: COLOR_CLASSES[0] }];
                 saveDays();
@@ -3629,11 +3638,53 @@
                 viewDay.classList.add('hidden');
                 viewWeek.classList.remove('hidden');
                 renderWorkoutList();
-                closeBackupModal();
-                showToast('Backup importato!', false);
-            };
-            reader.readAsText(file);
-        };
+                return true;
+        }
+
+        // --- TRANSFER FROM THE OLD ADDRESS --- //
+        // The old site opens this one with "#import=<data>": the data travels inside the link,
+        // compressed (gzip + base64url), so it works even between different browsers/tabs
+        function base64UrlToBytes(text) {
+            const b64 = text.replace(/-/g, '+').replace(/_/g, '/');
+            const bin = atob(b64 + '='.repeat((4 - b64.length % 4) % 4));
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return bytes;
+        }
+
+        async function decodeTransfer(code) {
+            const kind = code[0];
+            const bytes = base64UrlToBytes(code.slice(1));
+            if (kind === 'z') {
+                const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+                return JSON.parse(await new Response(stream).text());
+            }
+            return JSON.parse(new TextDecoder().decode(bytes));
+        }
+
+        async function importFromTransferLink() {
+            const match = location.hash.match(/^#import=(.+)$/);
+            if (!match) return;
+            // Remove the data from the address right away (it should not stay in the bar or be shared)
+            history.replaceState(null, '', location.pathname + location.search);
+            let data = null;
+            try { data = await decodeTransfer(match[1]); } catch (err) {}
+            if (!data || data.app !== 'ghisa' || !Array.isArray(data.workouts)) {
+                showToast('Trasferimento non riuscito. Usa il Backup dal vecchio indirizzo.');
+                return;
+            }
+            const hasData = workouts.length > 0 || Object.keys(getHistoryData()).length > 0;
+            if (hasData && !confirm('Su questo telefono Ghisa ha già dei dati. Sostituirli con quelli trasferiti?')) return;
+            if (!applyBackupData(data)) return;
+
+            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+            const installed = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+            if (isIOS && !installed) {
+                alert('Dati trasferiti! Ora aggiungi Ghisa alla schermata Home: tocca Condividi e poi "Aggiungi alla schermata Home".');
+            } else {
+                showToast(`Dati trasferiti! ${workouts.length} esercizi e ${Object.keys(getHistoryData()).length} giorni di storico.`, false);
+            }
+        }
 
         // Offline support + installability (only works when served over http/https)
         if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
@@ -3659,6 +3710,7 @@
         // Init UI on load
         cleanHistoryImages();
         renderWorkoutList();
+        importFromTransferLink();
         updateTimerUI(timerTargetSeconds, timerTargetSeconds);
 
     </script>
