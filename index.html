@@ -191,7 +191,7 @@
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-[10px] opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.9</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.10</span>
             </div>
         </section>
 
@@ -291,12 +291,6 @@
                 </div>
             </div>
 
-            <!-- RESET CHECKMARKS BUTTON -->
-            <button onclick="resetDayCheckmarks()" class="w-full mb-6 bg-gray-900 text-white font-black italic uppercase text-sm py-4 rounded-2xl flex items-center justify-center gap-3 shadow-sport active:scale-[0.98] transition-all border-b-4 border-ghisa-accent">
-                <i class="fa-solid fa-rotate-right text-ghisa-accent text-lg"></i>
-                <span>Nuova Sessione (Resetta Spunte)</span>
-            </button>
-
             <!-- Add New Exercise with Type Selector -->
             <div class="bg-white rounded-2xl p-4 mb-8 shadow-sport border-2 border-gray-100">
                 <div class="flex gap-2 mb-3 bg-gray-100 p-1 rounded-xl">
@@ -345,6 +339,7 @@
             </div>
 
             <!-- List of Exercises for the Day -->
+            <p class="text-[11px] text-gray-400 font-medium mb-2 px-1"><i class="fa-solid fa-hand-point-left mr-1"></i> Trascina un esercizio verso sinistra per eliminarlo.</p>
             <div id="day-exercise-list" class="space-y-4">
                 <!-- Populated via JS -->
             </div>
@@ -407,6 +402,7 @@
                     </button>
                 </div>
 
+                <p class="bg-gray-50 text-[10px] text-gray-400 font-medium px-3 pt-2"><i class="fa-solid fa-hand-point-left mr-1"></i> Trascina una serie verso sinistra per eliminarla.</p>
                 <div id="ex-detail-sets-container" class="bg-gray-50 p-2 sm:p-3 min-h-[80px]">
                     <!-- Populated via JS -->
                 </div>
@@ -446,10 +442,6 @@
                 <input type="file" id="ex-image-upload" accept="image/*" class="hidden" onchange="handleDetailImageUpload(event)">
             </div>
 
-            <!-- Delete Button -->
-            <button id="btn-delete-exercise" onclick="smartDeleteExercise(this)" data-confirm="false" class="w-full py-3 text-sm text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-6">
-                <i class="fa-solid fa-trash-can mr-2"></i> Elimina Attività
-            </button>
         </section>
 
     </main>
@@ -2634,6 +2626,112 @@
             showToast(`Aggiunto: ${finalName}`, false);
         }
 
+        // --- SWIPE TO DELETE --- //
+        // Drag a row to the left: a red "Elimina" button appears behind it, and only tapping it deletes.
+        // A tap (or a drag back to the right) closes it again. One row open at a time.
+        let openSwipe = null;
+        const SWIPE_OPEN = -88;
+
+        function swipeToDelete(content, onDelete, wrapClass) {
+            const wrap = document.createElement('div');
+            wrap.className = `relative overflow-hidden ${wrapClass || ''}`;
+
+            const action = document.createElement('button');
+            action.type = 'button';
+            action.title = 'Elimina';
+            action.className = 'absolute inset-y-0 right-0 w-[88px] bg-red-600 text-white flex flex-col items-center justify-center gap-1 text-[10px] font-black uppercase tracking-wider';
+            action.style.visibility = 'hidden';
+            action.innerHTML = '<i class="fa-solid fa-trash-can text-lg"></i>Elimina';
+            action.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openSwipe = null;
+                onDelete();
+            });
+
+            content.classList.add('relative');
+            content.style.touchAction = 'pan-y'; // vertical scrolling stays with the page, sideways drags come here
+            content.style.transition = 'transform 0.2s ease';
+            wrap.append(action, content);
+
+            let startX = 0, startY = 0, base = 0, dx = 0, decided = false, dragging = false, justSwiped = false;
+            const setX = (x) => {
+                content.style.transform = x ? `translateX(${x}px)` : '';
+                if (x) action.style.visibility = 'visible';
+            };
+            const close = () => {
+                setX(0);
+                delete wrap.dataset.open;
+                if (openSwipe === wrap) openSwipe = null;
+                setTimeout(() => { if (!wrap.dataset.open) action.style.visibility = 'hidden'; }, 220);
+            };
+            wrap.closeSwipe = close;
+
+            content.addEventListener('pointerdown', (e) => {
+                if (openSwipe && openSwipe !== wrap) openSwipe.closeSwipe();
+                startX = e.clientX;
+                startY = e.clientY;
+                base = wrap.dataset.open ? SWIPE_OPEN : 0;
+                dx = 0;
+                decided = false;
+                dragging = false;
+            });
+            content.addEventListener('pointermove', (e) => {
+                if (e.pointerType === 'mouse' && e.buttons === 0) return;
+                const mx = e.clientX - startX, my = e.clientY - startY;
+                if (!decided) {
+                    if (Math.abs(mx) < 8 && Math.abs(my) < 8) return;
+                    decided = true;
+                    dragging = Math.abs(mx) > Math.abs(my);
+                    if (!dragging) return;
+                    content.setPointerCapture(e.pointerId);
+                    content.style.transition = 'none';
+                }
+                if (!dragging) return;
+                dx = mx;
+                setX(Math.min(0, Math.max(SWIPE_OPEN - 24, base + mx)));
+            });
+            const end = () => {
+                if (!dragging) return;
+                dragging = false;
+                content.style.transition = 'transform 0.2s ease';
+                if (base + dx < SWIPE_OPEN / 2) {
+                    setX(SWIPE_OPEN);
+                    wrap.dataset.open = '1';
+                    openSwipe = wrap;
+                } else {
+                    close();
+                }
+                // The click that follows a drag must not open/tick anything
+                justSwiped = true;
+                setTimeout(() => { justSwiped = false; }, 60);
+            };
+            content.addEventListener('pointerup', end);
+            content.addEventListener('pointercancel', end);
+
+            // While open, a tap on the row only closes it
+            content.addEventListener('click', (e) => {
+                if (!justSwiped && !wrap.dataset.open) return;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (!justSwiped) close();
+            }, true);
+
+            return wrap;
+        }
+
+        // A tap anywhere else closes the open row
+        document.addEventListener('pointerdown', (e) => {
+            if (openSwipe && !openSwipe.contains(e.target)) openSwipe.closeSwipe();
+        });
+
+        function deleteExercise(id) {
+            const ex = workouts.find(w => w.id === id);
+            workouts = workouts.filter(w => w.id !== id);
+            saveToStorage();
+            renderDayList();
+            if (ex) showToast(`Eliminato: ${ex.name}`, false);
+        }
+
         // --- WORKOUTS (home) --- //
         function renderWorkoutList() {
             const list = document.getElementById('workout-list');
@@ -2849,31 +2947,6 @@
             updateNewExPlaceholder();
         };
 
-        window.resetDayCheckmarks = () => {
-            let hasCompleted = false;
-            workouts.forEach(w => {
-                if(w.dayId === currentDay && (w.completed || (w.sets || []).some(isSetDoneToday))) {
-                    markExerciseDone(w, false);
-                    hasCompleted = true;
-                }
-            });
-
-            if(hasCompleted) {
-                saveToStorage();
-                renderDayList();
-                const btn = document.querySelector('[onclick="resetDayCheckmarks()"]');
-                const originalHtml = btn.innerHTML;
-                btn.innerHTML = '<i class="fa-solid fa-check text-white text-lg"></i><span>Spunte Azzerate! Buon Allenamento</span>';
-                btn.classList.add('bg-ghisa-neonGreen', 'border-green-600');
-                btn.classList.remove('bg-gray-900', 'border-ghisa-accent');
-                setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                    btn.classList.remove('bg-ghisa-neonGreen', 'border-green-600');
-                    btn.classList.add('bg-gray-900', 'border-ghisa-accent');
-                }, 2000);
-            }
-        };
-
         // Short summary of the best set for the exercise cards
         function bestSetSummary(ex) {
             const sets = ex.sets || [];
@@ -2950,7 +3023,11 @@
                     </div>
                 `;
                 card.querySelector('input[type=checkbox]').addEventListener('change', (e) => toggleExerciseListComplete(ex.id, e.target.checked));
-                list.appendChild(card);
+                card.classList.remove('slide-up');
+                const wrap = swipeToDelete(card, () => deleteExercise(ex.id), 'rounded-2xl slide-up');
+                wrap.style.animationDelay = card.style.animationDelay;
+                card.style.animationDelay = '';
+                list.appendChild(wrap);
             });
         }
 
@@ -3128,11 +3205,6 @@
             viewExercise.classList.remove('hidden');
             window.scrollTo(0, 0);
 
-            const delBtn = document.getElementById('btn-delete-exercise');
-            delBtn.dataset.confirm = 'false';
-            delBtn.innerHTML = '<i class="fa-solid fa-trash-can mr-2"></i> Elimina Attività';
-            delBtn.className = "w-full py-3 text-sm text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-6";
-
             renderExerciseDetail();
         };
 
@@ -3297,7 +3369,7 @@
                 ex.sets.forEach((set, idx) => {
                     const done = isSetDoneToday(set);
                     const row = document.createElement('div');
-                    row.className = `flex items-stretch gap-2 p-2 rounded-xl mb-1.5 border shadow-sm transition-colors ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
+                    row.className = `flex items-stretch gap-2 p-2 rounded-xl border shadow-sm transition-colors ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
 
                     const amountBlock = `
                         <div class="flex-1 min-w-0">
@@ -3319,11 +3391,8 @@
 
                     row.innerHTML = `
                         <div class="flex-grow min-w-0">
-                            <div class="flex items-center justify-between mb-1">
+                            <div class="mb-1">
                                 <span class="text-xs font-black uppercase tracking-wider text-gray-900">Serie ${idx + 1}</span>
-                                <button type="button" onclick="removeSet(${idx})" title="Elimina serie" class="w-6 h-6 rounded-md text-gray-300 hover:text-white hover:bg-red-500 flex items-center justify-center transition-all">
-                                    <i class="fa-solid fa-xmark text-xs"></i>
-                                </button>
                             </div>
                             <div class="flex gap-2">${mainLine}</div>
                             <div class="flex items-center gap-1.5 mt-1.5">
@@ -3335,21 +3404,18 @@
                         </div>
                         ${checkButtonHtml(idx, done, 'w-11 sm:w-12')}
                     `;
-                    setsContainer.appendChild(row);
+                    setsContainer.appendChild(swipeToDelete(row, () => removeSet(idx), 'rounded-xl mb-1.5'));
                 });
             } else {
                 ex.sets.forEach((set, idx) => {
                     const done = isSetDoneToday(set);
                     const block = document.createElement('div');
-                    block.className = `p-2.5 rounded-xl mb-2 border shadow-sm relative ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`;
+                    block.className = `p-2.5 rounded-xl border shadow-sm relative ${done ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`;
 
                     block.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-xs font-black italic text-gray-400">BLOCCO ${idx + 1}</span>
                             <div class="flex items-center gap-1.5">
-                                <button onclick="removeSet(${idx})" class="w-7 h-7 rounded-lg text-gray-400 hover:text-white hover:bg-red-500 bg-gray-100 flex items-center justify-center transition-all">
-                                    <i class="fa-solid fa-trash text-[10px]"></i>
-                                </button>
                                 ${checkButtonHtml(idx, done, 'w-9 h-9')}
                             </div>
                         </div>
@@ -3372,7 +3438,7 @@
                             </div>
                         </div>
                     `;
-                    setsContainer.appendChild(block);
+                    setsContainer.appendChild(swipeToDelete(block, () => removeSet(idx), 'rounded-xl mb-2'));
                 });
             }
         }
@@ -3618,25 +3684,6 @@
             renderExerciseDetail();
             showToast(`Ora: ${ex.name}`, false);
         }
-
-        let deleteTimeout;
-        window.smartDeleteExercise = (btn) => {
-            if (btn.dataset.confirm === 'true') {
-                workouts = workouts.filter(w => w.id !== currentExerciseId);
-                saveToStorage();
-                closeExercise();
-                clearTimeout(deleteTimeout);
-            } else {
-                btn.dataset.confirm = 'true';
-                btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2"></i> Sicuro? Tocca di nuovo';
-                btn.className = "w-full py-3 text-sm text-white font-black uppercase tracking-widest bg-red-600 rounded-xl shadow-neon-orange transition-all active:scale-[0.98] mb-6";
-                deleteTimeout = setTimeout(() => {
-                    btn.dataset.confirm = 'false';
-                    btn.innerHTML = '<i class="fa-solid fa-trash-can mr-2"></i> Elimina Attività';
-                    btn.className = "w-full py-3 text-sm text-gray-500 font-black uppercase tracking-widest bg-gray-100 rounded-xl border-2 border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all active:scale-[0.98] mb-6";
-                }, 3000);
-            }
-        };
 
         window.handleDetailImageUpload = (event) => {
             const file = event.target.files[0];
