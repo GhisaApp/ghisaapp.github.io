@@ -191,7 +191,7 @@
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-[10px] opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.11</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.12</span>
             </div>
         </section>
 
@@ -270,6 +270,13 @@
                 </button>
                 <input type="file" id="backup-import-input" accept="application/json,.json" class="hidden" onchange="importBackup(event)">
                 <p class="text-[11px] text-gray-400 mt-3 text-center">L'importazione sostituisce i dati attuali.</p>
+                <label id="stats-row" class="mt-5 pt-4 border-t border-gray-100 flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" id="stats-toggle" onchange="toggleStats(this.checked)" class="mt-0.5 w-5 h-5 shrink-0 accent-orange-600">
+                    <span class="text-xs text-gray-500">
+                        <b class="text-gray-800">Invia statistiche anonime d'uso</b><br>
+                        Solo conteggi (aperture, giorni di allenamento): niente nomi né allenamenti. Ci aiuta a migliorare Ghisa.
+                    </span>
+                </label>
             </div>
         </div>
 
@@ -1900,6 +1907,7 @@
             }
             const blob = buildXlsx(`Allenamento ${date}`, dayRows(date, entries), [11, 16, 22, 16, 6, 7, 12, 9, 9, 6, 8, 11, 12, 16, 24, 30]);
             shareOrDownload(blob, `ghisa-${date}.xlsx`, `Allenamento del ${formatShortDate(date)}`, 'Excel scaricato!');
+            sendStat('excel');
         };
 
         // --- SHARE ON SOCIAL: a 1080×1920 story image, drawn on a canvas --- //
@@ -2352,12 +2360,14 @@
         window.sendShareImage = () => {
             if (!shareState || !shareState.blob) return;
             shareOrDownload(shareState.blob, `ghisa-${shareState.date}.png`, `Allenamento ${shareState.title}`, 'Immagine salvata!');
+            sendStat('condivisione');
         };
 
         window.saveShareImage = () => {
             if (!shareState || !shareState.blob) return;
             downloadBlob(shareState.blob, `ghisa-${shareState.date}.png`);
             showToast('Immagine salvata!', false);
+            sendStat('condivisione');
         };
 
         // --- LOG ON ANOTHER DAY / FIX THE HISTORY --- //
@@ -3438,6 +3448,7 @@
             if (nowDone) {
                 if ('vibrate' in navigator) navigator.vibrate(30);
                 startTimerFromSet();
+                trackTrainingDay();
             }
         };
 
@@ -3922,6 +3933,11 @@
         // --- BACKUP LOGIC --- //
         window.openBackupModal = () => {
             const modal = document.getElementById('modal-backup');
+            let statsOn = true;
+            try { statsOn = localStorage.getItem(STATS_OFF_KEY) !== '1'; } catch (err) {}
+            document.getElementById('stats-toggle').checked = statsOn;
+            // Shown only once the statistics are connected
+            document.getElementById('stats-row').classList.toggle('hidden', !UMAMI_WEBSITE_ID);
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         };
@@ -4052,6 +4068,87 @@
             }
         }
 
+        // --- ANONYMOUS USAGE STATISTICS (Umami Cloud) --- //
+        // Only anonymous counts reach Umami: no names, no workouts, no cookies. The owners see
+        // them in their Umami dashboard. Few events per visit, to stay inside the free plan:
+        //   page "/app-installata" or "/browser"  → an opening (from the Home icon or from the browser)
+        //   "installazione"                        → installed from the browser prompt (Android/Chrome)
+        //   "giorno-di-allenamento"                → first set ticked of the day
+        //   "condivisione", "excel"                → share image / Excel export
+        //   "chiusura"                             → app sent to background: gives the visit duration
+        const UMAMI_WEBSITE_ID = '03ff7807-8aca-4384-b201-dc889e3f2e8b'; // from the Umami dashboard (Settings → Websites); empty = statistics off
+        const UMAMI_ENDPOINT = 'https://gateway.umami.is/api/send';
+        const STATS_OFF_KEY = 'ghisa_stats_off';
+        const STATS_DAY_KEY = 'ghisa_stats_training_day';
+        let statsCache = null;   // Umami's session token, sent back so the visit stays one visit
+        let hiddenSince = 0;
+
+        function statsEnabled() {
+            if (!UMAMI_WEBSITE_ID || !location.protocol.startsWith('http')) return false;
+            try { return localStorage.getItem(STATS_OFF_KEY) !== '1'; } catch (err) { return false; }
+        }
+
+        function isInstalledApp() {
+            return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+        }
+
+        // name empty = a page view; never blocks or breaks the app
+        function sendStat(name, url) {
+            if (!statsEnabled()) return;
+            const payload = {
+                website: UMAMI_WEBSITE_ID,
+                hostname: location.hostname,
+                language: navigator.language,
+                referrer: '',
+                screen: `${screen.width}x${screen.height}`,
+                title: 'Ghisa',
+                url: url || (isInstalledApp() ? '/app-installata' : '/browser')
+            };
+            if (name) payload.name = name;
+            const headers = { 'Content-Type': 'application/json' };
+            if (statsCache) headers['x-umami-cache'] = statsCache;
+            fetch(UMAMI_ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ type: 'event', payload }), keepalive: true })
+                .then(r => r.ok ? r.json() : null)
+                .then(res => { if (res && res.cache) statsCache = res.cache; })
+                .catch(() => {});
+        }
+
+        function trackOpening() {
+            sendStat('');
+        }
+
+        // Once per day, at the first set ticked
+        function trackTrainingDay() {
+            const today = getTodayString();
+            try {
+                if (localStorage.getItem(STATS_DAY_KEY) === today) return;
+                localStorage.setItem(STATS_DAY_KEY, today);
+            } catch (err) {}
+            sendStat('giorno-di-allenamento');
+        }
+
+        window.addEventListener('appinstalled', () => sendStat('installazione'));
+
+        // An installed app stays open in the background: coming back after 30 minutes counts as a new opening
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                hiddenSince = Date.now();
+                sendStat('chiusura');
+            } else if (hiddenSince && Date.now() - hiddenSince > 30 * 60 * 1000) {
+                statsCache = null;
+                trackOpening();
+            }
+        });
+
+        // Switch in the Backup window
+        window.toggleStats = (on) => {
+            try {
+                if (on) localStorage.removeItem(STATS_OFF_KEY);
+                else localStorage.setItem(STATS_OFF_KEY, '1');
+            } catch (err) {}
+            showToast(on ? 'Statistiche anonime attive. Grazie!' : 'Statistiche disattivate.', false);
+        };
+
         // Offline support + installability (only works when served over http/https)
         if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
             // When a new version is published, the new service worker takes over:
@@ -4077,6 +4174,7 @@
         cleanHistoryImages();
         renderWorkoutList();
         importFromTransferLink();
+        trackOpening();
         updateTimerUI(timerTargetSeconds, timerTargetSeconds);
 
     </script>
