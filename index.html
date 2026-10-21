@@ -191,7 +191,7 @@
                 <span class="text-gray-400 font-bold uppercase tracking-widest text-[10px] opacity-70">
                     Made by Micheleru' and Carlodon'
                 </span>
-                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.12</span>
+                <span class="block mt-1 text-gray-300 font-bold text-[10px] tracking-widest">VERSIONE 1.13</span>
             </div>
         </section>
 
@@ -4075,7 +4075,8 @@
         //   "installazione"                        → installed from the browser prompt (Android/Chrome)
         //   "giorno-di-allenamento"                → first set ticked of the day
         //   "condivisione", "excel"                → share image / Excel export
-        //   "chiusura"                             → app sent to background: gives the visit duration
+        //   same page again when the app goes to background → Umami measures the visit duration
+        //   between page views only (custom events are not counted), so the closing is a page view
         const UMAMI_WEBSITE_ID = '03ff7807-8aca-4384-b201-dc889e3f2e8b'; // from the Umami dashboard (Settings → Websites); empty = statistics off
         const UMAMI_ENDPOINT = 'https://gateway.umami.is/api/send';
         const STATS_OFF_KEY = 'ghisa_stats_off';
@@ -4133,7 +4134,7 @@
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 hiddenSince = Date.now();
-                sendStat('chiusura');
+                sendStat('');
             } else if (hiddenSince && Date.now() - hiddenSince > 30 * 60 * 1000) {
                 statsCache = null;
                 trackOpening();
